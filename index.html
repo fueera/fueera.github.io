@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fueera LLC - Software Division</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #1d1d1f;
+            --secondary: #86868b;
+            --bg-color: #fbfbfd;
+            --card-bg: #ffffff;
+            --border: #e8e8ed;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--primary);
+            line-height: 1.5;
+        }
+
+        /* Header Section */
+        header {text-align: center; padding: 80px 20px 40px; max-width: 800px; margin: 0 auto;}
+        h1 {font-size: 2.5rem; margin-bottom: 16px; letter-spacing: -0.5px;}
+        .mission {font-size: 1.15rem; color: var(--secondary); max-width: 700px; margin: 0 auto;}
+
+        /* App Grid Layout */
+        .container {max-width: 1000px; margin: 0 auto; padding: 0 20px 80px;}
+        .app-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;}
+
+        /* App Card Component */
+        .app-card {
+            background-color: var(--card-bg);
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+        }
+        .app-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
+
+        .app-header {display: flex; align-items: center; gap: 16px; margin-bottom: 16px;}
+        .app-icon {width: 64px; height: 64px; background-color: #f0f0f0; border-radius: 14px; font-size: 32px; display: flex; align-items: center; justify-content: center;}
+        .app-title {margin: 0; font-size: 1.5rem; font-weight: 600;}
+        .app-category {color: var(--secondary); font-size: 0.9rem; margin: 4px 0 0; text-transform: uppercase; font-weight: 600;}
+        .app-description {color: var(--primary); font-size: 1rem; flex-grow: 1; margin-bottom: 24px;}
+        
+        /* Links */
+        .app-links {display: flex; gap: 12px; flex-wrap: wrap;}
+        .button {background-color: var(--primary); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem; font-weight: 500;}
+        .button.secondary {background-color: #f0f0f0; color: var(--primary);}
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            :root {--primary: #f5f5f7; --secondary: #a1a1a6; --bg-color: #000000; --card-bg: #1c1c1e; --border: #38383a;}
+            .button {background-color: white; color: black;}
+            .button.secondary {background-color: #38383a; color: white;}
+            .app-icon {background-color: #38383a;}
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Fueera LLC</h1>
+        <p class="mission">Fueera LLC develops targeted, AI-driven SaaS solutions for businesses and government organizations. With Artificial Intelligence at our core, we build scalable platforms designed to eliminate specific business pain points while delivering exceptional data analysis, automated reporting, and intelligent insights.</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- ========================================== -->
+        <!-- APP GRID START: Add new apps inside here   -->
+        <!-- ========================================== -->
+        <div class="app-grid">
+
+            <!-- APP 1: EOTC Calendar -->
+            <div class="app-card">
+                <div class="app-header">
+                    <div class="app-icon">✝️</div> 
+                    <div>
+                        <h2 class="app-title">EOTC Calendar</h2>
+                        <p class="app-category">iOS & WatchOS App</p>
+                    </div>
+                </div>
+                <p class="app-description">A comprehensive digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Features intelligent reminders for fasts, feasts, and daily saints.</p>
+                <div class="app-links">
+                    <a href="#" class="button">View on App Store</a>
+                    <a href="/app-ads.txt" class="button secondary">app-ads.txt</a>
+                </div>
+            </div>
+
+            <!-- Future apps can be pasted below this line! -->
+
+        </div>
+    </div>
+
+</body>
+</html>

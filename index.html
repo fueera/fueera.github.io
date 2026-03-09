@@ -25,7 +25,13 @@
 
         /* Header Section */
         header {text-align: center; padding: 80px 20px 40px; max-width: 800px; margin: 0 auto;}
-        h1 {font-size: 2.5rem; margin-bottom: 16px; letter-spacing: -0.5px;}
+        
+        .company-logo {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 24px;
+        }
+
         .mission {font-size: 1.15rem; color: var(--secondary); max-width: 700px; margin: 0 auto;}
 
         /* App Grid Layout */
@@ -62,27 +68,32 @@
             .button {background-color: white; color: black;}
             .button.secondary {background-color: #38383a; color: white;}
             .app-icon {background-color: #38383a;}
+            
+            /* White background for the transparent logo in dark mode */
+            .company-logo {
+                background-color: #fbfbfd;
+                padding: 15px 30px;
+                border-radius: 12px;
+            }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Fueera LLC</h1>
+        <!-- The Company Logo -->
+        <img src="assets/images/logo.png" alt="Fueera LLC" class="company-logo">
         <p class="mission">Fueera LLC develops targeted, AI-driven SaaS solutions for businesses and government organizations. With Artificial Intelligence at our core, we build scalable platforms designed to eliminate specific business pain points while delivering exceptional data analysis, automated reporting, and intelligent insights.</p>
     </header>
 
     <div class="container">
-        
-        <!-- ========================================== -->
-        <!-- APP GRID START: Add new apps inside here   -->
-        <!-- ========================================== -->
         <div class="app-grid">
 
             <!-- APP 1: EOTC Calendar -->
             <div class="app-card">
                 <div class="app-header">
-                    <div class="app-icon">✝️</div> 
+                    <!-- The App Icon -->
+                    <img src="assets/icons/eotc-calendar-icon.png" alt="EOTC Calendar Icon" class="app-icon" style="object-fit: cover;">
                     <div>
                         <h2 class="app-title">EOTC Calendar</h2>
                         <p class="app-category">iOS & WatchOS App</p>
@@ -90,12 +101,12 @@
                 </div>
                 <p class="app-description">A comprehensive digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Features intelligent reminders for fasts, feasts, and daily saints.</p>
                 <div class="app-links">
-                    <a href="#" class="button">View on App Store</a>
+                    <a href="https://apps.apple.com/us/app/ethiopian-orthodox-calendar/id6737599023" class="button">View on App Store</a>
                     <a href="/app-ads.txt" class="button secondary">app-ads.txt</a>
                 </div>
             </div>
 
-            <!-- Future apps can be pasted below this line! -->
+            <!-- Future apps can be copy/pasted right here! -->
 
         </div>
     </div>

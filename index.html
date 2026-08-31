@@ -3,136 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fueera LLC - Software Division</title>
-    <style>
-        /* Base Styles */
-        :root {
-            --primary: #1d1d1f;
-            --secondary: #86868b;
-            --bg-color: #fbfbfd;
-            --card-bg: #ffffff;
-            --border: #e8e8ed;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--primary);
-            line-height: 1.5;
-        }
-
-        /* Header Section */
-        header {text-align: center; padding: 80px 20px 40px; max-width: 800px; margin: 0 auto;}
-        
-        .company-logo {
-            max-width: 250px;
-            height: auto;
-            margin-bottom: 24px;
-        }
-
-        .mission {font-size: 1.15rem; color: var(--secondary); max-width: 700px; margin: 0 auto;}
-
-        /* App Grid Layout */
-        .container {max-width: 1000px; margin: 0 auto; padding: 0 20px 80px;}
-        .app-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;}
-
-        /* App Card Component */
-        .app-card {
-            background-color: var(--card-bg);
-            border-radius: 18px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s ease;
-        }
-        .app-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
-
-        .app-header {display: flex; align-items: center; gap: 16px; margin-bottom: 16px;}
-        .app-icon {width: 64px; height: 64px; background-color: #f0f0f0; border-radius: 14px; font-size: 32px; display: flex; align-items: center; justify-content: center;}
-        .app-title {margin: 0; font-size: 1.5rem; font-weight: 600;}
-        .app-category {color: var(--secondary); font-size: 0.9rem; margin: 4px 0 0; text-transform: uppercase; font-weight: 600;}
-        .app-description {color: var(--primary); font-size: 1rem; flex-grow: 1; margin-bottom: 24px;}
-        
-        /* Links */
-        .app-links {display: flex; gap: 12px; flex-wrap: wrap;}
-        .button {background-color: var(--primary); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-size: 0.95rem; font-weight: 500;}
-        .button.secondary {background-color: #f0f0f0; color: var(--primary);}
-
-        /* Dark Mode */
-        @media (prefers-color-scheme: dark) {
-            :root {--primary: #f5f5f7; --secondary: #a1a1a6; --bg-color: #000000; --card-bg: #1c1c1e; --border: #38383a;}
-            .button {background-color: white; color: black;}
-            .button.secondary {background-color: #38383a; color: white;}
-            .app-icon {background-color: #38383a;}
-            
-            /* White background for the transparent logo in dark mode */
-            /* .company-logo {
-                background-color: #fbfbfd;
-                padding: 15px 30px;
-                border-radius: 12px;
-            } */
-        }
-    </style>
+    <title>Fueera LLC — Software Division</title>
+    <meta name="description" content="Fueera LLC builds intuitive mobile and watchOS applications, including EOTC Calendar, Ethiopian Calendar &amp; Widgets, NURU Digital Fasting, and DuoBaby.">
+    <link rel="canonical" href="https://apps.fueera.com/">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <meta property="og:title" content="Fueera LLC — Software Division">
+    <meta property="og:description" content="Intuitive mobile and watchOS applications from Fueera LLC.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://apps.fueera.com/">
 </head>
 <body>
 
-    <header>
-        <!-- The Company Logo -->
+    <header class="home-header">
         <img src="assets/images/logo.png" alt="Fueera LLC" class="company-logo">
-        <p class="mission">Fueera LLC is a diversified technology company. Our Software Division specializes in developing intuitive mobile and watchOS applications, alongside scalable SaaS platforms designed to solve real-world problems. In addition to our software solutions, we also operate a curated e-commerce marketplace at fueera.com.</p>
+        <p class="mission">Fueera LLC is a diversified technology company. Our Software Division specializes in developing intuitive mobile and watchOS applications, alongside scalable SaaS platforms designed to solve real-world problems. In addition to our software solutions, we also operate a curated e-commerce marketplace at <a href="https://fueera.com">fueera.com</a>.</p>
     </header>
 
-    <div class="container">
+    <main class="container">
+        <h2 class="section-label">Our apps</h2>
+
         <div class="app-grid">
 
             <!-- APP 1: EOTC Calendar -->
-            <div class="app-card">
+            <a class="app-card" href="apps/eotc-calendar/">
                 <div class="app-header">
-                    <!-- The App Icon -->
-                    <img src="assets/icons/eotc-calendar-icon.png" alt="EOTC Calendar Icon" class="app-icon" style="object-fit: cover;">
+                    <img src="assets/icons/eotc-calendar-icon.png" alt="" class="app-icon">
                     <div>
-                        <h2 class="app-title">EOTC Calendar</h2>
-                        <p class="app-category">iOS & WatchOS App</p>
+                        <h3 class="app-title">EOTC Calendar</h3>
+                        <p class="app-category">iOS &amp; watchOS</p>
                     </div>
                 </div>
-                <p class="app-description">A comprehensive digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Features intelligent reminders for fasts, feasts, and daily saints.</p>
-                <div class="app-links">
-                    <a href="https://apps.apple.com/us/app/eotc-calendar/id6759210779" class="button">View on App Store</a>
-                </div>
-            </div>
-            
-            <!-- APP 2: DuoBaby -->
-            <div class="app-card">
+                <p class="app-description">A comprehensive digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Fasts, feasts, daily saints, a church finder, and Digital Fasting to block distractions during fasting periods.</p>
+                <span class="card-cta">Learn more →</span>
+            </a>
+
+            <!-- APP 2: Ethiopian Calendar & Widgets -->
+            <a class="app-card" href="apps/ethiopian-calendar/">
                 <div class="app-header">
-                    <img src="assets/icons/duobaby-icon.png" alt="DuoBaby Icon" class="app-icon" style="object-fit: cover;">
+                    <img src="assets/icons/ethiopian-calendar-icon.png" alt="" class="app-icon">
                     <div>
-                        <h2 class="app-title">DuoBaby</h2>
+                        <h3 class="app-title">Ethiopian Calendar &amp; Widgets</h3>
+                        <p class="app-category">iOS &amp; Widgets</p>
+                    </div>
+                </div>
+                <p class="app-description">The Ge'ez calendar at a glance, with Home and Lock Screen widgets, dual Ethiopian and Gregorian dates, holidays with cultural context, and an instant date converter.</p>
+                <span class="card-cta">Learn more →</span>
+            </a>
+
+            <!-- APP 3: NURU — Digital Fasting -->
+            <a class="app-card" href="apps/nuru/">
+                <div class="app-header">
+                    <img src="assets/icons/nuru-icon.png" alt="" class="app-icon">
+                    <div>
+                        <h3 class="app-title">NURU — Digital Fasting</h3>
+                        <p class="app-category">iOS App</p>
+                    </div>
+                </div>
+                <p class="app-description">Reclaim your attention, one day at a time. Set a fast from the apps that pull at you, track your streaks, and fast together with others in Circles.</p>
+                <span class="card-cta">Learn more →</span>
+            </a>
+
+            <!-- APP 4: DuoBaby -->
+            <a class="app-card" href="https://apps.apple.com/us/app/duobaby/id6755917419">
+                <div class="app-header">
+                    <img src="assets/icons/duobaby-icon.png" alt="" class="app-icon">
+                    <div>
+                        <h3 class="app-title">DuoBaby</h3>
                         <p class="app-category">iOS App</p>
                     </div>
                 </div>
                 <p class="app-description">An early childhood development app designed to make learning engaging and fun for your little ones.</p>
-                <div class="app-links">
-                    <!-- Replace the # with the actual App Store link once it is approved! -->
-                    <a href="https://apps.apple.com/us/app/duobaby/id6755917419" class="button">View on App Store</a>
-                </div>
-            </div>
-
-            <!-- Future apps can be copy/pasted right here! -->
+                <span class="card-cta">View on the App Store →</span>
+            </a>
 
         </div>
-    </div>
-    <footer style="text-align: center; padding: 40px 20px;">
-        <div style="margin-bottom: 20px;">
-            <a href="mailto:support@fueera.com" style="color: var(--secondary); text-decoration: none; font-weight: 500;">support@fueera.com</a>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="mailto:support@fueera.com">support@fueera.com</a>
+            <a href="/privacy-policy/">Privacy Policy</a>
         </div>
-        <div style="margin-bottom: 20px;">
-            <a href="/privacy-policy/" style="color: var(--secondary); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
-        </div>
-        <p style="margin: 0;">&copy; 2026 Fueera LLC. All rights reserved.</p>
+        <p>&copy; 2026 Fueera LLC. All rights reserved.</p>
     </footer>
+
 </body>
 </html>

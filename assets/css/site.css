@@ -38,6 +38,7 @@
     --font-display: "Jost", "Futura", "Century Gothic", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --display-tracking: -0.04em;
+    --display-weight: 900;
 }
 
 /* Dark theme. --paper lands exactly on #222222, the logo artwork's own
@@ -94,7 +95,7 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 }
 
 .display {
-    font-weight: 900;
+    font-weight: var(--display-weight);
     letter-spacing: var(--display-tracking);
     line-height: 0.85;
     text-transform: uppercase;
@@ -349,7 +350,7 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 .section h2 {
     font-size: clamp(1.9rem, 6.5vw, 4.4rem);
     margin: 0 0 18px;
-    font-weight: 900;
+    font-weight: var(--display-weight);
     letter-spacing: var(--display-tracking);
     line-height: 0.92;
     text-transform: uppercase;
@@ -518,7 +519,7 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 
 .app-row h2 {
     font-size: clamp(1.3rem, 3.4vw, 2.4rem);
-    font-weight: 900;
+    font-weight: var(--display-weight);
     letter-spacing: var(--display-tracking);
     text-transform: uppercase;
     margin: 0 0 4px;

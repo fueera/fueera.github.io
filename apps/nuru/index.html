@@ -7,143 +7,172 @@
     <meta name="description" content="NURU is a digital fasting app for iPhone. Set a challenge, block distracting apps, fast together in Circles with a shared daily break window, and track your streaks.">
     <link rel="canonical" href="https://apps.fueera.com/apps/nuru/">
     <link rel="icon" href="../../assets/icons/nuru-icon.png">
-    <link rel="stylesheet" href="../../assets/css/site.css">
     <meta property="og:title" content="NURU — Digital Fasting">
     <meta property="og:description" content="Reclaim your attention. One day at a time.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://apps.fueera.com/apps/nuru/">
     <meta property="og:image" content="https://apps.fueera.com/assets/screenshots/nuru/home.jpg">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2eee2">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#222222">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/site.css">
+    <script>document.documentElement.classList.add('js');</script>
     <style>
         :root {
             --accent: #e0904f;
             --accent-ink: #10191f;
             --brand-bg: #101c22;
         }
+
+        /* The NURU wordmark in the App Store artwork is a very light,
+           wide-tracked geometric rather than a heavy display cut. Match it. */
+        .hero h1 {
+            font-weight: 300;
+            letter-spacing: 0.09em;
+        }
     </style>
 </head>
 <body>
 
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+    <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
+
     <nav class="site-nav">
-        <div class="container">
-            <a href="../../" class="nav-brand">Fueera LLC</a>
-            <a href="../../" class="nav-back">← All apps</a>
+        <div class="wrap">
+            <a href="../../" class="nav-brand">Fueera<sup>®</sup></a>
+            <span class="nav-mid mono">NURU / Digital Fasting</span>
+            <a href="../../" class="nav-back mono">[ All apps ]</a>
         </div>
     </nav>
 
     <header class="hero">
-        <div class="hero-inner">
+        <div class="hero-grid">
             <div class="hero-copy">
                 <img src="../../assets/icons/nuru-icon.png" alt="" class="hero-icon">
-                <h1>NURU</h1>
+                <h1 class="display" data-split>NURU</h1>
                 <p class="hero-tagline">Reclaim your attention. One day at a time.</p>
-                <p class="hero-meta">iPhone · Digital Fasting</p>
+                <ul class="hero-meta mono">
+                    <li>iPhone</li>
+                    <li>Digital Fasting</li>
+                    <li>Free</li>
+                </ul>
                 <div class="hero-actions">
-                    <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="button on-brand">
-                        <svg class="apple-glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                        View on the App Store
+                    <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="btn" data-magnetic="0.3">
+                        <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                        App Store
                     </a>
-                    <a href="#features" class="button on-brand ghost">See features</a>
+                    <a href="#features" class="btn btn-ghost" data-magnetic="0.25">Features</a>
                 </div>
             </div>
-            <img src="../../assets/screenshots/nuru/hero.jpg" alt="NURU showing an active digital fast with streak, days remaining, and hours protected" class="hero-shot" width="828" height="1792">
+            <div class="hero-media">
+                <img src="../../assets/screenshots/nuru/hero.jpg" alt="NURU showing an active digital fast with streak, days remaining, and hours protected" class="hero-shot" width="828" height="1792" data-parallax="0.06">
+            </div>
         </div>
     </header>
 
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+            <span>Digital Fasting</span>
+            <span>Reclaim Your Attention</span>
+            <span>Fast Together</span>
+        </div>
+    </div>
+
     <main>
-        <section class="section container" id="features">
-            <h2>Fasting, for your attention</h2>
-            <p class="lede">NURU applies an old idea to a new problem. You choose how long to fast from the apps that pull at you, and NURU holds the line — quietly, with encouragement rather than shame. Do it alone, or join a Circle and fast alongside other people working on the same thing.</p>
+        <section class="section" id="features">
+            <div class="section-head">
+                <span class="section-kicker mono">01 — What it does</span>
+                <h2 data-split>Fasting, for your attention</h2>
+                <p class="lede" data-reveal>NURU applies an old idea to a new problem. You choose how long to fast from the apps that pull at you, and NURU holds the line — quietly, with encouragement rather than shame. Do it alone, or join a Circle and fast alongside other people working on the same thing.</p>
+            </div>
 
-            <div class="feature-grid">
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 6.4 15.4"/></svg></div>
+            <ol class="features" data-stagger>
+                <li class="feature">
+                    <span class="feature-num">01</span>
                     <h3>Choose your fast</h3>
                     <p>7, 30, 60, or 90 days — or set your own length. NURU tracks the day you are on, the days remaining, and the date you finish.</p>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+                </li>
+                <li class="feature">
+                    <span class="feature-num">02</span>
                     <h3>Block what pulls at you</h3>
                     <p>Social media, entertainment and streaming, news and doomscrolling — pick the categories, then the apps on your device that match.</p>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+                </li>
+                <li class="feature">
+                    <span class="feature-num">03</span>
                     <h3>Fasting Circles</h3>
                     <p>Create a circle or join one by code, or browse public tribes. Fasting together is the difference between a rule and a habit.</p>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+                </li>
+                <li class="feature">
+                    <span class="feature-num">04</span>
                     <h3>A shared break window</h3>
                     <p>Every circle has one daily break — 15 minutes, 30 minutes, or an hour — shown to each member in their own timezone, so a group across four cities still breaks together.</p>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.4 5.5 5.6.5-4.2 3.9 1.2 5.6L12 15.7 6.9 18.5l1.3-5.6L4 9l5.6-.5z"/></svg></div>
+                </li>
+                <li class="feature">
+                    <span class="feature-num">05</span>
                     <h3>Mindful unlock</h3>
                     <p>Reach for a blocked app and you get a short timer and a question worth sitting with, instead of an instant override.</p>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20h-20"/></svg></div>
+                </li>
+                <li class="feature">
+                    <span class="feature-num">06</span>
                     <h3>Insights and streaks</h3>
                     <p>Current streak, longest streak, total days, days you stayed strong, and the breaks you took — laid out week by week.</p>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-10a4.5 4.5 0 0 1 7-3.7A4.5 4.5 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg></div>
+                </li>
+                <li class="feature">
+                    <span class="feature-num">07</span>
                     <h3>Encouragement, not shame</h3>
                     <p>Block screens remind you why you started — the streak you are holding, the days left, and the hours you have protected today.</p>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></div>
+                </li>
+                <li class="feature">
+                    <span class="feature-num">08</span>
                     <h3>Custom schedules</h3>
                     <p>Block for a whole fasting day, or set specific hours — perfect for work, prayer, study, or the first hour after waking.</p>
-                </div>
-
-            </div>
+                </li>
+            </ol>
         </section>
 
         <section class="section shots-section">
-            <div class="container">
-                <h2>A closer look</h2>
-                <p class="shots-hint">Swipe or scroll to see more.</p>
+            <div class="section-head">
+                <span class="section-kicker mono">02 — A closer look</span>
+                <h2 data-split>See it running</h2>
             </div>
-            <div class="shots">
-                <img src="../../assets/screenshots/nuru/home.jpg" alt="NURU home screen showing day 2 of a 14 day challenge with days left and end date" width="828" height="1792" loading="lazy">
-                <img src="../../assets/screenshots/nuru/insights.jpg" alt="Insights screen showing day streak, total days, longest streak, and weekly progress" width="828" height="1792" loading="lazy">
-                <img src="../../assets/screenshots/nuru/block-screen.jpg" alt="Block screen shown when a fasted app is opened, with streak and hours protected" width="828" height="1792" loading="lazy">
-                <img src="../../assets/screenshots/nuru/circles.jpg" alt="Fasting Circles screen listing public tribes to browse and join" width="828" height="1792" loading="lazy">
-                <img src="../../assets/screenshots/nuru/create-circle.jpg" alt="Creating a circle: setting fasting duration, break window, and daily break time across timezones" width="828" height="1792" loading="lazy">
-                <img src="../../assets/screenshots/nuru/join-circle.jpg" alt="Joining a 20 day challenge showing duration, break window, members, and blocked categories" width="828" height="1792" loading="lazy">
-                <img src="../../assets/screenshots/nuru/blocked-categories.jpg" alt="Required categories for a circle: social media, entertainment and streaming, news and reading" width="828" height="1792" loading="lazy">
-                <img src="../../assets/screenshots/nuru/mindful-unlock.jpg" alt="Mindful unlock timer with a gratitude reflection prompt before returning" width="828" height="1792" loading="lazy">
+            <div class="shots" data-drag>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/home.jpg" alt="NURU home screen showing day 2 of a 14 day challenge with days left and end date" width="828" height="1792" loading="lazy"><figcaption>01 / Today</figcaption></figure>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/insights.jpg" alt="Insights screen showing day streak, total days, longest streak, and weekly progress" width="828" height="1792" loading="lazy"><figcaption>02 / Insights</figcaption></figure>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/block-screen.jpg" alt="Block screen shown when a fasted app is opened, with streak and hours protected" width="828" height="1792" loading="lazy"><figcaption>03 / Block screen</figcaption></figure>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/circles.jpg" alt="Fasting Circles screen listing public tribes to browse and join" width="828" height="1792" loading="lazy"><figcaption>04 / Circles</figcaption></figure>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/create-circle.jpg" alt="Creating a circle: setting fasting duration, break window, and daily break time across timezones" width="828" height="1792" loading="lazy"><figcaption>05 / Create a circle</figcaption></figure>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/join-circle.jpg" alt="Joining a 20 day challenge showing duration, break window, members, and blocked categories" width="828" height="1792" loading="lazy"><figcaption>06 / Join by code</figcaption></figure>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/blocked-categories.jpg" alt="Required categories for a circle: social media, entertainment and streaming, news and reading" width="828" height="1792" loading="lazy"><figcaption>07 / What gets blocked</figcaption></figure>
+                <figure class="shot"><img src="../../assets/screenshots/nuru/mindful-unlock.jpg" alt="Mindful unlock timer with a gratitude reflection prompt before returning" width="828" height="1792" loading="lazy"><figcaption>08 / Mindful unlock</figcaption></figure>
             </div>
         </section>
 
-        <section class="section container">
-            <div class="cta">
-                <h2>NURU — Digital Fasting</h2>
-                <p>Available on the App Store for iPhone.</p>
-                <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="button on-brand">
-                    <svg class="apple-glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                    View on the App Store
+        <section class="cta-section">
+            <div class="wrap">
+                <h2 class="display" data-split>Get NURU</h2>
+                <p>Free on the App Store for iPhone</p>
+                <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="btn" data-magnetic="0.35">
+                    <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                    Download
                 </a>
             </div>
         </section>
     </main>
 
     <footer class="site-footer">
-        <div class="footer-links">
-            <a href="../../">All apps</a>
-            <a href="mailto:support@fueera.com">Support</a>
-            <a href="../../privacy-policy/">Privacy Policy</a>
+        <div class="wrap">
+            <span class="mono">&copy; 2026 Fueera LLC</span>
+            <nav class="footer-links mono">
+                <a href="../../">All apps</a>
+                <a href="mailto:support@fueera.com">Support</a>
+                <a href="../../privacy-policy/">Privacy</a>
+            </nav>
         </div>
-        <p>&copy; 2026 Fueera LLC. All rights reserved.</p>
     </footer>
 
+    <script src="../../assets/js/motion.js" defer></script>
 </body>
 </html>

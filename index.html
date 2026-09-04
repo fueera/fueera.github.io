@@ -6,86 +6,118 @@
     <title>Fueera LLC — Software Division</title>
     <meta name="description" content="Fueera LLC builds intuitive mobile and watchOS applications, including EOTC Calendar, Ethiopian Calendar &amp; Widgets, NURU Digital Fasting, and DuoBaby.">
     <link rel="canonical" href="https://apps.fueera.com/">
-    <link rel="stylesheet" href="assets/css/site.css">
     <meta property="og:title" content="Fueera LLC — Software Division">
     <meta property="og:description" content="Intuitive mobile and watchOS applications from Fueera LLC.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://apps.fueera.com/">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2eee2">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#222222">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/site.css">
+    <script>document.documentElement.classList.add('js');</script>
+    <style>
+        :root {
+            --accent: #de6751;
+            --accent-ink: #ffffff;
+        }
+    </style>
 </head>
 <body>
 
-    <header class="home-header">
-        <img src="assets/images/logo.png" alt="Fueera LLC" class="company-logo">
-        <p class="mission">Fueera LLC is a diversified technology company. Our Software Division specializes in developing intuitive mobile and watchOS applications, alongside scalable SaaS platforms designed to solve real-world problems. In addition to our software solutions, we also operate a curated e-commerce marketplace at <a href="https://fueera.com">fueera.com</a>.</p>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+    <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
+
+    <nav class="site-nav">
+        <div class="wrap">
+            <a href="/" class="nav-brand">Fueera<sup>®</sup></a>
+            <span class="nav-mid mono">Software Division</span>
+            <a href="mailto:support@fueera.com" class="nav-back mono">[ Contact ]</a>
+        </div>
+    </nav>
+
+    <header class="home-hero">
+        <div class="wrap">
+            <span class="logo-mask" data-reveal>
+                <picture>
+                    <source srcset="assets/images/logo-dark.png" media="(prefers-color-scheme: dark)">
+                    <img src="assets/images/logo-light.png" alt="Fueera LLC" width="900" height="427">
+                </picture>
+            </span>
+            <span class="section-kicker mono">Fueera LLC — 004 apps</span>
+            <h1 class="display" data-split>Software Division</h1>
+            <p class="lede" data-reveal>Fueera LLC is a diversified technology company. Our Software Division specializes in developing intuitive mobile and watchOS applications, alongside scalable SaaS platforms designed to solve real-world problems. We also operate a curated e-commerce marketplace at <a href="https://fueera.com" style="border-bottom:2px solid currentColor">fueera.com</a>.</p>
+        </div>
     </header>
 
-    <main class="container">
-        <h2 class="section-label">Our apps</h2>
-
-        <div class="app-grid">
-
-            <!-- APP 1: EOTC Calendar -->
-            <a class="app-card" href="apps/eotc-calendar/">
-                <div class="app-header">
-                    <img src="assets/icons/eotc-calendar-icon.png" alt="" class="app-icon">
-                    <div>
-                        <h3 class="app-title">EOTC Calendar</h3>
-                        <p class="app-category">iOS &amp; watchOS</p>
-                    </div>
-                </div>
-                <p class="app-description">A comprehensive digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Fasts, feasts, daily saints, a church finder, and Digital Fasting to block distractions during fasting periods.</p>
-                <span class="card-cta">Learn more →</span>
-            </a>
-
-            <!-- APP 2: Ethiopian Calendar & Widgets -->
-            <a class="app-card" href="apps/ethiopian-calendar/">
-                <div class="app-header">
-                    <img src="assets/icons/ethiopian-calendar-icon.png" alt="" class="app-icon">
-                    <div>
-                        <h3 class="app-title">Ethiopian Calendar &amp; Widgets</h3>
-                        <p class="app-category">iOS &amp; Widgets</p>
-                    </div>
-                </div>
-                <p class="app-description">The Ge'ez calendar at a glance, with Home and Lock Screen widgets, dual Ethiopian and Gregorian dates, holidays with cultural context, and an instant date converter.</p>
-                <span class="card-cta">Learn more →</span>
-            </a>
-
-            <!-- APP 3: NURU — Digital Fasting -->
-            <a class="app-card" href="apps/nuru/">
-                <div class="app-header">
-                    <img src="assets/icons/nuru-icon.png" alt="" class="app-icon">
-                    <div>
-                        <h3 class="app-title">NURU — Digital Fasting</h3>
-                        <p class="app-category">iOS App</p>
-                    </div>
-                </div>
-                <p class="app-description">Reclaim your attention, one day at a time. Set a fast from the apps that pull at you, track your streaks, and fast together with others in Circles.</p>
-                <span class="card-cta">Learn more →</span>
-            </a>
-
-            <!-- APP 4: DuoBaby -->
-            <a class="app-card" href="https://apps.apple.com/us/app/duobaby/id6755917419">
-                <div class="app-header">
-                    <img src="assets/icons/duobaby-icon.png" alt="" class="app-icon">
-                    <div>
-                        <h3 class="app-title">DuoBaby</h3>
-                        <p class="app-category">iOS App</p>
-                    </div>
-                </div>
-                <p class="app-description">An early childhood development app designed to make learning engaging and fun for your little ones.</p>
-                <span class="card-cta">View on the App Store →</span>
-            </a>
-
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+            <span>iOS</span>
+            <span>watchOS</span>
+            <span>Widgets</span>
+            <span>Built in-house</span>
         </div>
+    </div>
+
+    <main>
+        <a class="app-row" href="apps/eotc-calendar/" style="--row-accent:#e2913f;--row-ink:#1e2d34">
+            <span class="app-row-idx">001</span>
+            <img src="assets/icons/eotc-calendar-icon.png" alt="" class="app-row-icon">
+            <div class="app-row-body">
+                <h2>EOTC Calendar</h2>
+                <span class="app-row-cat">iOS &amp; watchOS</span>
+                <p class="app-row-desc">A comprehensive digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Fasts, feasts, daily saints, a church finder, and Digital Fasting.</p>
+            </div>
+            <span class="app-row-go">View <span>→</span></span>
+        </a>
+
+        <a class="app-row" href="apps/ethiopian-calendar/" style="--row-accent:#e8b54d;--row-ink:#2a303c">
+            <span class="app-row-idx">002</span>
+            <img src="assets/icons/ethiopian-calendar-icon.png" alt="" class="app-row-icon">
+            <div class="app-row-body">
+                <h2>Ethiopian Calendar &amp; Widgets</h2>
+                <span class="app-row-cat">iOS &amp; Widgets</span>
+                <p class="app-row-desc">The Ge'ez calendar at a glance, with Home and Lock Screen widgets, dual Ethiopian and Gregorian dates, holidays with cultural context, and an instant date converter.</p>
+            </div>
+            <span class="app-row-go">View <span>→</span></span>
+        </a>
+
+        <a class="app-row" href="apps/nuru/" style="--row-accent:#e0904f;--row-ink:#10191f">
+            <span class="app-row-idx">003</span>
+            <img src="assets/icons/nuru-icon.png" alt="" class="app-row-icon">
+            <div class="app-row-body">
+                <h2>NURU — Digital Fasting</h2>
+                <span class="app-row-cat">iOS App</span>
+                <p class="app-row-desc">Reclaim your attention, one day at a time. Set a fast from the apps that pull at you, track your streaks, and fast together with others in Circles.</p>
+            </div>
+            <span class="app-row-go">View <span>→</span></span>
+        </a>
+
+        <a class="app-row" href="https://apps.apple.com/us/app/duobaby/id6755917419" style="--row-accent:#de6751;--row-ink:#ffffff">
+            <span class="app-row-idx">004</span>
+            <img src="assets/icons/duobaby-icon.png" alt="" class="app-row-icon">
+            <div class="app-row-body">
+                <h2>DuoBaby</h2>
+                <span class="app-row-cat">iOS App</span>
+                <p class="app-row-desc">An early childhood development app designed to make learning engaging and fun for your little ones.</p>
+            </div>
+            <span class="app-row-go">App Store <span>→</span></span>
+        </a>
     </main>
 
     <footer class="site-footer">
-        <div class="footer-links">
-            <a href="mailto:support@fueera.com">support@fueera.com</a>
-            <a href="/privacy-policy/">Privacy Policy</a>
+        <div class="wrap">
+            <span class="mono">&copy; 2026 Fueera LLC</span>
+            <nav class="footer-links mono">
+                <a href="mailto:support@fueera.com">support@fueera.com</a>
+                <a href="/privacy-policy/">Privacy Policy</a>
+                <a href="https://fueera.com">fueera.com</a>
+            </nav>
         </div>
-        <p>&copy; 2026 Fueera LLC. All rights reserved.</p>
     </footer>
 
+    <script src="assets/js/motion.js" defer></script>
 </body>
 </html>

@@ -3,121 +3,834 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fueera LLC — Software Division</title>
-    <meta name="description" content="Fueera LLC builds intuitive mobile and watchOS applications, including EOTC Calendar, Ethiopian Calendar &amp; Widgets, NURU Digital Fasting, and DuoBaby.">
+    <title>Fueera — Software Division</title>
+    <meta name="description" content="Fueera LLC builds iPhone and Apple Watch apps for the Ethiopian diaspora: EOTC Calendar, Ethiopian Calendar &amp; Widgets, NURU — Digital Fasting, and DuoBaby.">
     <link rel="canonical" href="https://apps.fueera.com/">
-    <meta property="og:title" content="Fueera LLC — Software Division">
-    <meta property="og:description" content="Intuitive mobile and watchOS applications from Fueera LLC.">
+    <meta property="og:title" content="Fueera — Software Division">
+    <meta property="og:description" content="Four apps, each built for a problem we lived first.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://apps.fueera.com/">
+    <meta property="og:site_name" content="Fueera LLC">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2eee2">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#222222">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300..900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/site.css?v=2">
-    <script>document.documentElement.classList.add('js');</script>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300..800&family=Space+Mono:wght@400;700&family=Open+Sans:wght@800&family=Source+Sans+3:wght@300;400&family=Julius+Sans+One&family=Fredoka:wght@600&family=Noto+Sans+Ethiopic:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="preload" as="image" href="assets/screens/eotc-calendar.jpg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Jost', 'Futura', '"Century Gothic"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        mono: ['"Space Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+                        eotc: ['"Open Sans"', '"Noto Sans Ethiopic"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        ethio: ['"Source Sans 3"', '"Noto Sans Ethiopic"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        nuru: ['"Julius Sans One"', 'Jost', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        duo: ['Fredoka', '"Arial Rounded MT Bold"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        geez: ['"Noto Sans Ethiopic"', '"Nyala"', 'sans-serif'],
+                    },
+                    colors: {
+                        paper: 'var(--paper)',
+                        ink: 'var(--ink)',
+                        'ink-soft': 'var(--ink-soft)',
+                    },
+                },
+            },
+        };
+    </script>
+
     <style>
+        /* ------------------------------------------------------------------
+           Tokens. --paper / --ink follow the Fueera logo artwork so the logo
+           sits flush in both themes. The --morph-* values are driven by the
+           scroll timeline; --m is how far the stage has morphed away from the
+           base paper (0 = hero/footer, 1 = inside the app chapters).
+           ------------------------------------------------------------------ */
         :root {
-            --accent: #de6751;
-            --accent-ink: #ffffff;
+            color-scheme: light dark;
+            --paper: #f2eee2;
+            --ink: #222222;
+            --ink-soft: #6b675e;
+            --grain: 0.035;
+
+            --m: 0;
+            --mc: 0;
+            --morph-bg: #14245a;
+            --morph-fg: #f5efe2;
+            --morph-accent: #e9a94b;
+
+            /* Chrome (nav, device caption) switches from theme ink to the
+               active chapter's foreground. It follows --mc, which snaps at
+               the midpoint of each background crossfade instead of blending
+               alongside it, so text and ground never go grey together. */
+            --chrome: color-mix(in srgb, var(--morph-fg) calc(var(--mc) * 100%), var(--ink));
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #222222;
+                --ink: #f2eee2;
+                --ink-soft: #a29d92;
+                --grain: 0.02;
+            }
+        }
+
+        html { scroll-behavior: smooth; }
+        body { background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+        h1, h2, h3 { text-wrap: balance; }
+        ::selection { background: var(--morph-accent); color: #111; }
+        :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+        /* ---------------- Stage: the morphing viewport background ---------------- */
+        .stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .stage > div { position: absolute; inset: 0; }
+        .stage-base { background: var(--paper); }
+        .stage-morph { background: var(--morph-bg); opacity: var(--m); }
+        .stage-grain {
+            opacity: var(--grain);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* ---------------- Chapters ----------------
+           Without GSAP each chapter paints its own ground, so the page still
+           reads correctly; once the scroll engine is live it takes over and
+           the chapters go transparent over the morphing stage. */
+        .chapter { background: var(--c-bg); color: var(--c-fg); }
+        html.morph-on .chapter { background: transparent; }
+
+        .chapter[data-app="eotc"]  { --c-bg: #14245a; --c-fg: #f5efe2; --c-accent: #e9a94b; --c-on-accent: #14245a; }
+        .chapter[data-app="ethio"] { --c-bg: #8a5a17; --c-fg: #fdf5e4; --c-accent: #ffd98a; --c-on-accent: #4a2f08; }
+        .chapter[data-app="nuru"]  { --c-bg: #0e1316; --c-fg: #ece6dc; --c-accent: #e0904f; --c-on-accent: #10191f; }
+        .chapter[data-app="duo"]   { --c-bg: #f5ead3; --c-fg: #24324a; --c-accent: #23699a; --c-on-accent: #ffffff; }
+
+        .c-accent { color: var(--c-accent); }
+        .c-muted  { color: color-mix(in srgb, var(--c-fg) 80%, transparent); }
+        .c-line   { border-color: color-mix(in srgb, var(--c-fg) 24%, transparent); }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: .6rem;
+            padding: .95rem 1.4rem;
+            font-family: "Space Mono", ui-monospace, monospace;
+            font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+            border: 1.5px solid transparent;
+            transition: background-color .25s, color .25s, border-color .25s, transform .25s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--c-accent); color: var(--c-on-accent); }
+        .btn-ghost { border-color: color-mix(in srgb, var(--c-fg) 40%, transparent); color: var(--c-fg); }
+        .btn-ghost:hover { background: var(--c-fg); color: var(--c-bg); border-color: var(--c-fg); }
+        .btn svg { width: 15px; height: 15px; flex: none; }
+
+        .jump { border-color: color-mix(in srgb, var(--ink) 18%, transparent); transition: border-color .25s, transform .25s; }
+        .jump:hover { border-color: var(--ink); transform: translateY(-2px); }
+
+        /* ---------------- iPhone frame ----------------
+           Sized from one variable (--w) so every proportion scales together:
+           body 77.6 x 163 mm, so height = 2.1w. */
+        .iphone {
+            --w: 300px;
+            position: relative;
+            width: var(--w);
+            height: calc(var(--w) * 2.1);
+            border-radius: calc(var(--w) * .165);
+            background: linear-gradient(145deg, #57544f 0%, #1f1e1c 36%, #2d2b29 64%, #5d5a55 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, .22),
+                inset 0 0 0 calc(var(--w) * .007) #0c0c0c,
+                0 calc(var(--w) * .1) calc(var(--w) * .22) calc(var(--w) * -.06) rgba(0, 0, 0, .55);
+            transform-style: preserve-3d;
+        }
+        .iphone__btn { position: absolute; width: calc(var(--w) * .011); background: linear-gradient(90deg, #3b3936, #1c1b19); border-radius: 2px; }
+        .iphone__btn--action { left: calc(var(--w) * -.009); top: 17%; height: 4.5%; }
+        .iphone__btn--volup  { left: calc(var(--w) * -.009); top: 25%; height: 8%; }
+        .iphone__btn--voldn  { left: calc(var(--w) * -.009); top: 35%; height: 8%; }
+        .iphone__btn--power  { right: calc(var(--w) * -.009); top: 27%; height: 12%; }
+
+        .iphone__bezel {
+            position: absolute;
+            inset: calc(var(--w) * .014);
+            border-radius: calc(var(--w) * .152);
+            background: #050505;
+            padding: calc(var(--w) * .026);
+        }
+        .iphone__screen {
+            position: relative;
+            width: 100%; height: 100%;
+            border-radius: calc(var(--w) * .128);
+            overflow: hidden;
+            background: #000;
+            isolation: isolate;
+            transform: translateZ(0);
+        }
+        .screen-layer {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top center;
+            clip-path: inset(100% 0% 0% 0%);
+            will-change: clip-path, transform;
+        }
+        .screen-layer.is-current { clip-path: inset(0% 0% 0% 0%); }
+        .screen-launch { background: #f2eee2; display: grid; place-items: center; }
+        .screen-launch img { width: 74%; height: auto; }
+
+        .iphone__island {
+            position: absolute; z-index: 50;
+            top: calc(var(--w) * .024); left: 50%;
+            width: calc(var(--w) * .29); height: calc(var(--w) * .08);
+            transform: translateX(-50%);
+            background: #000; border-radius: 999px;
+        }
+        .iphone__glare {
+            position: absolute; inset: -30%; z-index: 40; pointer-events: none;
+            background: linear-gradient(115deg, rgba(255, 255, 255, .20) 0%, rgba(255, 255, 255, .05) 20%, rgba(255, 255, 255, 0) 38%);
+            transform: translate3d(var(--gx, 0%), 0, 0);
+            mix-blend-mode: screen;
+        }
+        .wipe-edge {
+            position: absolute; left: 0; right: 0; top: 0; z-index: 45;
+            height: 2px; opacity: 0;
+            background: var(--morph-accent);
+            box-shadow: 0 0 22px 5px var(--morph-accent);
+        }
+
+        /* Desktop stage */
+        .device-stage { perspective: 1700px; }
+        #device-tilt { transform-style: preserve-3d; will-change: transform; }
+        .device-glow {
+            position: absolute; left: 50%; top: 50%;
+            width: 150%; aspect-ratio: 1; transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(closest-side, color-mix(in srgb, var(--morph-accent) 42%, transparent), transparent);
+            opacity: .5; filter: blur(8px);
+        }
+        .device-shadow {
+            position: absolute; left: 12%; right: 12%;
+            bottom: calc(var(--w, 300px) * -.16);
+            height: 60px;
+            background: radial-gradient(closest-side, rgba(0, 0, 0, .45), transparent);
+            filter: blur(6px);
+        }
+        .ghost-index {
+            position: absolute; inset: 0;
+            display: grid; place-items: center;
+            pointer-events: none;
+        }
+        .ghost-index span {
+            grid-area: 1 / 1;
+            font: 800 clamp(9rem, 19vw, 19rem)/1 Jost, sans-serif;
+            letter-spacing: -.04em;
+            color: transparent;
+            -webkit-text-stroke: 1.5px color-mix(in srgb, var(--chrome) 26%, transparent);
+            opacity: 0;
+        }
+        .ghost-index span.is-current { opacity: 1; }
+
+        /* Inline phones on small screens, where a fixed column won't fit */
+        .iphone--inline { --w: 210px; transform: rotate(-3deg); }
+
+        /* Nav: a frosted band tinted with whatever ground is behind it at this
+           scroll position (the same base/morph composite the stage paints),
+           so chapter copy scrolls under it instead of colliding with it. */
+        .site-nav {
+            color: var(--chrome);
+            background: color-mix(in srgb, color-mix(in srgb, var(--morph-bg) calc(var(--m) * 100%), var(--paper)) 84%, transparent);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+        }
+        .nav-dot { position: relative; opacity: .55; transition: opacity .3s; }
+        .nav-dot::after {
+            content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
+            background: var(--morph-accent); transform: scaleX(0); transform-origin: left;
+            transition: transform .45s cubic-bezier(.16, 1, .3, 1);
+        }
+        .nav-dot:hover { opacity: .9; }
+        .nav-dot[aria-current="true"] { opacity: 1; }
+        .nav-dot[aria-current="true"]::after { transform: scaleX(1); }
+
+        .scroll-cue span { display: block; width: 1px; height: 48px; background: currentColor; transform-origin: top; animation: cue 2.2s cubic-bezier(.65, 0, .35, 1) infinite; }
+        @keyframes cue { 0% { transform: scaleY(0); } 45% { transform: scaleY(1); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .scroll-cue span { animation: none; }
+            .btn:hover { transform: none; }
         }
     </style>
 </head>
-<body>
+<body class="font-sans antialiased">
 
-    <div class="scroll-progress" aria-hidden="true"><span></span></div>
-    <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
-
-    <nav class="site-nav">
-        <div class="wrap">
-            <a href="/" class="nav-brand">Fueera<sup>®</sup></a>
-            <span class="nav-mid mono">Software Division</span>
-            <a href="mailto:support@fueera.com" class="nav-back mono">[ Contact ]</a>
-        </div>
-    </nav>
-
-    <header class="home-hero">
-        <div class="wrap">
-            <span class="logo-mask" data-reveal>
-                <picture>
-                    <source srcset="assets/images/logo-dark.png" media="(prefers-color-scheme: dark)">
-                    <img src="assets/images/logo-light.png" alt="Fueera LLC" width="900" height="427">
-                </picture>
-            </span>
-            <span class="section-kicker mono">Fueera LLC — 004 apps</span>
-            <h1 class="display" data-split>Software Division</h1>
-            <p class="lede" data-reveal>Fueera LLC is a diversified technology company. Our Software Division specializes in developing intuitive mobile and watchOS applications, alongside scalable SaaS platforms designed to solve real-world problems. We also operate a curated e-commerce marketplace at <a href="https://fueera.com" style="border-bottom:2px solid currentColor">fueera.com</a>.</p>
-        </div>
-    </header>
-
-    <div class="marquee" aria-hidden="true">
-        <div class="marquee-track">
-            <span>iOS</span>
-            <span>watchOS</span>
-            <span>Widgets</span>
-            <span>Built in-house</span>
-        </div>
+    <div class="stage" aria-hidden="true">
+        <div class="stage-base"></div>
+        <div class="stage-morph"></div>
+        <div class="stage-grain"></div>
     </div>
 
-    <main>
-        <a class="app-row" href="apps/eotc-calendar/" style="--row-accent:#e2913f;--row-ink:#1e2d34">
-            <span class="app-row-idx">001</span>
-            <img src="assets/icons/eotc-calendar-icon.png" alt="" class="app-row-icon">
-            <div class="app-row-body">
-                <h2>EOTC Calendar</h2>
-                <span class="app-row-cat">iOS &amp; watchOS</span>
-                <p class="app-row-desc">A comprehensive digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Fasts, feasts, daily saints, a church finder, and Digital Fasting.</p>
+    <!-- =========================== NAV =========================== -->
+    <header class="site-nav fixed inset-x-0 top-0 z-50">
+        <nav class="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-5 sm:px-8 lg:px-12" aria-label="Primary">
+            <a href="#top" class="font-sans text-[1.05rem] font-light uppercase tracking-[.42em]">Fueera</a>
+            <div class="flex items-center gap-5 font-mono text-[.68rem] tracking-[.16em] sm:gap-7">
+                <a href="#app-eotc" class="nav-dot" data-i="0" aria-label="001, EOTC Calendar">001</a>
+                <a href="#app-ethio" class="nav-dot" data-i="1" aria-label="002, Ethiopian Calendar and Widgets">002</a>
+                <a href="#app-nuru" class="nav-dot" data-i="2" aria-label="003, NURU Digital Fasting">003</a>
+                <a href="#app-duo" class="nav-dot" data-i="3" aria-label="004, DuoBaby">004</a>
+                <a href="mailto:support@fueera.com" class="hidden uppercase opacity-80 hover:opacity-100 sm:inline">Contact</a>
             </div>
-            <span class="app-row-go">View <span>→</span></span>
-        </a>
+        </nav>
+    </header>
 
-        <a class="app-row" href="apps/ethiopian-calendar/" style="--row-accent:#e8b54d;--row-ink:#2a303c">
-            <span class="app-row-idx">002</span>
-            <img src="assets/icons/ethiopian-calendar-icon.png" alt="" class="app-row-icon">
-            <div class="app-row-body">
-                <h2>Ethiopian Calendar &amp; Widgets</h2>
-                <span class="app-row-cat">iOS &amp; Widgets</span>
-                <p class="app-row-desc">The Ge'ez calendar at a glance, with Home and Lock Screen widgets, dual Ethiopian and Gregorian dates, holidays with cultural context, and an instant date converter.</p>
-            </div>
-            <span class="app-row-go">View <span>→</span></span>
-        </a>
+    <main id="top" class="relative z-10">
 
-        <a class="app-row" href="apps/nuru/" style="--row-accent:#e0904f;--row-ink:#10191f">
-            <span class="app-row-idx">003</span>
-            <img src="assets/icons/nuru-icon.png" alt="" class="app-row-icon">
-            <div class="app-row-body">
-                <h2>NURU — Digital Fasting</h2>
-                <span class="app-row-cat">iOS App</span>
-                <p class="app-row-desc">Reclaim your attention, one day at a time. Set a fast from the apps that pull at you, track your streaks, and fast together with others in Circles.</p>
-            </div>
-            <span class="app-row-go">View <span>→</span></span>
-        </a>
+        <!-- =========================== HERO =========================== -->
+        <section class="mx-auto flex min-h-[100svh] max-w-[1320px] flex-col justify-center px-5 pb-16 pt-28 sm:px-8 lg:px-12">
+            <picture class="hero-part mb-10 block w-[190px] sm:w-[230px]">
+                <source srcset="assets/images/logo-dark.png" media="(prefers-color-scheme: dark)">
+                <img src="assets/images/logo-light.png" alt="Fueera LLC" width="900" height="427" class="h-auto w-full">
+            </picture>
 
-        <a class="app-row" href="https://apps.apple.com/us/app/duobaby/id6755917419" style="--row-accent:#de6751;--row-ink:#ffffff">
-            <span class="app-row-idx">004</span>
-            <img src="assets/icons/duobaby-icon.png" alt="" class="app-row-icon">
-            <div class="app-row-body">
-                <h2>DuoBaby</h2>
-                <span class="app-row-cat">iOS App</span>
-                <p class="app-row-desc">An early childhood development app designed to make learning engaging and fun for your little ones.</p>
+            <p class="hero-part mb-6 font-mono text-[.7rem] uppercase tracking-[.18em] text-ink-soft">Fueera LLC — Software Division</p>
+
+            <h1 class="hero-part max-w-[16ch] text-[clamp(2.6rem,6.6vw,5.6rem)] font-medium leading-[.98] tracking-[-.03em]">
+                Four apps, each built for a problem we lived first.
+            </h1>
+
+            <p class="hero-part mt-8 max-w-[58ch] text-lg leading-relaxed text-ink-soft sm:text-xl">
+                iPhone and Apple Watch apps for the Ethiopian diaspora and the families in it — a church calendar, the Ge'ez calendar in your widgets, a digital fast, and a first-words tracker for bilingual homes.
+            </p>
+
+            <ul class="hero-part mt-12 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Jump to an app">
+                <li><a href="#app-eotc" class="jump flex items-center gap-3 border p-3">
+                    <img src="assets/icons/eotc-calendar-icon.png" alt="" class="h-10 w-10 rounded-[22%]">
+                    <span class="font-mono text-[.64rem] uppercase leading-tight tracking-[.1em]"><span class="text-ink-soft">001</span><br>EOTC</span>
+                </a></li>
+                <li><a href="#app-ethio" class="jump flex items-center gap-3 border p-3">
+                    <img src="assets/icons/ethiopian-calendar-icon.png" alt="" class="h-10 w-10 rounded-[22%]">
+                    <span class="font-mono text-[.64rem] uppercase leading-tight tracking-[.1em]"><span class="text-ink-soft">002</span><br>Calendar</span>
+                </a></li>
+                <li><a href="#app-nuru" class="jump flex items-center gap-3 border p-3">
+                    <img src="assets/icons/nuru-icon.png" alt="" class="h-10 w-10 rounded-[22%]">
+                    <span class="font-mono text-[.64rem] uppercase leading-tight tracking-[.1em]"><span class="text-ink-soft">003</span><br>NURU</span>
+                </a></li>
+                <li><a href="#app-duo" class="jump flex items-center gap-3 border p-3">
+                    <img src="assets/icons/duobaby-icon.png" alt="" class="h-10 w-10 rounded-[22%]">
+                    <span class="font-mono text-[.64rem] uppercase leading-tight tracking-[.1em]"><span class="text-ink-soft">004</span><br>DuoBaby</span>
+                </a></li>
+            </ul>
+
+            <div class="hero-part scroll-cue mt-16 flex items-center gap-4 text-ink-soft" aria-hidden="true">
+                <span></span>
+                <p class="font-mono text-[.64rem] uppercase tracking-[.18em]">Scroll — 001 / 004</p>
             </div>
-            <span class="app-row-go">App Store <span>→</span></span>
-        </a>
+        </section>
+
+        <!-- =========================== CHAPTERS =========================== -->
+        <div id="chapters" class="relative lg:grid lg:grid-cols-12">
+
+            <div class="lg:col-span-7">
+
+                <!-- 001 — EOTC Calendar -->
+                <section id="app-eotc" class="chapter" data-app="eotc" data-index="0" aria-labelledby="eotc-title">
+                    <div class="mx-auto flex min-h-[100svh] max-w-[1320px] flex-col justify-center px-5 py-24 sm:px-8 lg:ml-auto lg:mr-0 lg:max-w-[760px] lg:pl-12 lg:pr-10">
+                        <div class="chapter-inner max-w-xl">
+                            <p data-part class="mb-8 font-mono text-[.7rem] tracking-[.18em]"><span class="c-accent">001</span> <span class="c-muted">/ 004</span></p>
+                            <div data-part class="mb-6 flex items-center gap-4">
+                                <img src="assets/icons/eotc-calendar-icon.png" alt="" class="h-14 w-14 rounded-[22%] shadow-lg">
+                                <div>
+                                    <p class="c-muted font-mono text-[.66rem] uppercase tracking-[.14em]">Liturgical calendar · iPhone &amp; Apple Watch</p>
+                                    <p class="c-accent mt-1 font-geez text-sm" lang="am">ጾም እና በዓላት</p>
+                                </div>
+                            </div>
+                            <h2 data-part id="eotc-title" class="font-eotc text-[clamp(2.4rem,5.2vw,4.4rem)] font-extrabold leading-[1] tracking-[-.025em]">EOTC Calendar</h2>
+                            <p data-part class="c-accent mt-4 text-xl font-medium sm:text-2xl">Your daily spiritual companion.</p>
+                            <p data-part class="c-muted mt-6 max-w-[54ch] text-[1.05rem] leading-relaxed">
+                                The calendar of the Ethiopian Orthodox Tewahedo Church — every fast, feast and saint's day — for a diaspora whose church keeps different dates from the country around them.
+                            </p>
+                            <ul data-part class="c-line mt-8 border-t">
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Fast tracking with automatic reminders</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Apple Watch, Lock Screen and Home Screen widgets</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>English and <span lang="am" class="font-geez">አማርኛ</span>, with Ge'ez numerals</span></li>
+                            </ul>
+                            <div data-part class="mt-9 flex flex-wrap gap-3">
+                                <a href="apps/eotc-calendar/" class="btn btn-primary">Explore</a>
+                                <a href="https://apps.apple.com/us/app/eotc-calendar/id6759210779" class="btn btn-ghost">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                                    App Store
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mt-16 flex justify-center lg:hidden">
+                            <div class="iphone iphone--inline">
+                                <div class="iphone__bezel"><div class="iphone__screen">
+                                    <img src="assets/screens/eotc-calendar.jpg" alt="EOTC Calendar Today screen: Hamle 30, 2018, no fast today, Markos and Yohannes as saints of the day" class="screen-layer is-current" loading="lazy">
+                                    <div class="iphone__island"></div>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 002 — Ethiopian Calendar & Widgets -->
+                <section id="app-ethio" class="chapter" data-app="ethio" data-index="1" aria-labelledby="ethio-title">
+                    <div class="mx-auto flex min-h-[100svh] max-w-[1320px] flex-col justify-center px-5 py-24 sm:px-8 lg:ml-auto lg:mr-0 lg:max-w-[760px] lg:pl-12 lg:pr-10">
+                        <div class="chapter-inner max-w-xl">
+                            <p data-part class="mb-8 font-mono text-[.7rem] tracking-[.18em]"><span class="c-accent">002</span> <span class="c-muted">/ 004</span></p>
+                            <div data-part class="mb-6 flex items-center gap-4">
+                                <img src="assets/icons/ethiopian-calendar-icon.png" alt="" class="h-14 w-14 rounded-[22%] shadow-lg">
+                                <div>
+                                    <p class="c-muted font-mono text-[.66rem] uppercase tracking-[.14em]">Everyday calendar · iPhone &amp; widgets</p>
+                                    <p id="ethio-today-am" class="c-accent mt-1 font-geez text-sm" lang="am" hidden></p>
+                                </div>
+                            </div>
+                            <h2 data-part id="ethio-title" class="font-ethio text-[clamp(2.5rem,5.6vw,4.7rem)] font-light leading-[1] tracking-[-.02em]">Ethiopian Calendar <span class="c-accent">&amp;</span> Widgets</h2>
+                            <p data-part class="c-accent mt-4 text-xl font-medium sm:text-2xl">Your day at a glance — in Ethiopian time.</p>
+                            <p data-part class="c-muted mt-6 max-w-[54ch] text-[1.05rem] leading-relaxed">
+                                The Ge'ez calendar for daily life: Ethiopian and Gregorian dates side by side, Addis Ababa time on the Ethiopian clock, and holidays that come with their history.
+                            </p>
+                            <p data-part id="ethio-today" class="c-line mt-6 inline-block border px-3 py-2 font-mono text-[.66rem] uppercase tracking-[.14em]" hidden></p>
+                            <ul data-part class="c-line mt-8 border-t">
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Switch the whole app between calendars</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Reminders set in Ethiopian daylight time</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Widgets from a single date to a full month</span></li>
+                            </ul>
+                            <div data-part class="mt-9 flex flex-wrap gap-3">
+                                <a href="apps/ethiopian-calendar/" class="btn btn-primary">Explore</a>
+                                <a href="https://apps.apple.com/us/app/ethiopian-calendar-widgets/id6761394400" class="btn btn-ghost">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                                    App Store
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mt-16 flex justify-center lg:hidden">
+                            <div class="iphone iphone--inline">
+                                <div class="iphone__bezel"><div class="iphone__screen">
+                                    <img src="assets/screens/ethiopian-calendar.jpg" alt="Ethiopian Calendar Today screen: Megabit 30, 2018 with Gregorian date, Addis Ababa time and upcoming holidays" class="screen-layer is-current" loading="lazy">
+                                    <div class="iphone__island"></div>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 003 — NURU -->
+                <section id="app-nuru" class="chapter" data-app="nuru" data-index="2" aria-labelledby="nuru-title">
+                    <div class="mx-auto flex min-h-[100svh] max-w-[1320px] flex-col justify-center px-5 py-24 sm:px-8 lg:ml-auto lg:mr-0 lg:max-w-[760px] lg:pl-12 lg:pr-10">
+                        <div class="chapter-inner max-w-xl">
+                            <p data-part class="mb-8 font-mono text-[.7rem] tracking-[.18em]"><span class="c-accent">003</span> <span class="c-muted">/ 004</span></p>
+                            <div data-part class="mb-6 flex items-center gap-4">
+                                <img src="assets/icons/nuru-icon.png" alt="" class="h-14 w-14 rounded-[22%] shadow-lg">
+                                <p class="c-muted font-mono text-[.66rem] uppercase tracking-[.14em]">Digital wellbeing · iPhone</p>
+                            </div>
+                            <h2 data-part id="nuru-title" class="font-nuru text-[clamp(2.8rem,6.4vw,5.4rem)] font-normal uppercase leading-[1] tracking-[.12em]">NURU</h2>
+                            <p data-part class="c-accent mt-4 text-xl font-medium sm:text-2xl">Reclaim your attention. One day at a time.</p>
+                            <p data-part class="c-muted mt-6 max-w-[54ch] text-[1.05rem] leading-relaxed">
+                                Block the apps that pull at you for a set fast — alone, or with a Circle that shares one daily break window across timezones. Built for religious fasting seasons, useful to anyone.
+                            </p>
+                            <ul data-part class="c-line mt-8 border-t">
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Fasts from 7 to 90 days, or your own length</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Fasting Circles with a shared break window</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>A mindful pause before any early unlock</span></li>
+                            </ul>
+                            <div data-part class="mt-9 flex flex-wrap gap-3">
+                                <a href="apps/nuru/" class="btn btn-primary">Explore</a>
+                                <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="btn btn-ghost">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                                    App Store
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mt-16 flex justify-center lg:hidden">
+                            <div class="iphone iphone--inline">
+                                <div class="iphone__bezel"><div class="iphone__screen">
+                                    <img src="assets/screens/nuru.jpg" alt="NURU home screen: day 2 of a 14-day digital fast, 12 days left" class="screen-layer is-current" loading="lazy">
+                                    <div class="iphone__island"></div>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 004 — DuoBaby -->
+                <section id="app-duo" class="chapter" data-app="duo" data-index="3" aria-labelledby="duo-title">
+                    <div class="mx-auto flex min-h-[100svh] max-w-[1320px] flex-col justify-center px-5 py-24 sm:px-8 lg:ml-auto lg:mr-0 lg:max-w-[760px] lg:pl-12 lg:pr-10">
+                        <div class="chapter-inner max-w-xl">
+                            <p data-part class="mb-8 font-mono text-[.7rem] tracking-[.18em]"><span class="c-accent">004</span> <span class="c-muted">/ 004</span></p>
+                            <div data-part class="mb-6 flex items-center gap-4">
+                                <img src="assets/icons/duobaby-icon.png" alt="" class="h-14 w-14 rounded-[22%] shadow-lg">
+                                <p class="c-muted font-mono text-[.66rem] uppercase tracking-[.14em]">Early childhood · iPhone</p>
+                            </div>
+                            <h2 data-part id="duo-title" class="font-duo text-[clamp(2.8rem,6.4vw,5.2rem)] font-semibold leading-[1] tracking-[-.01em]">Duo<span class="c-accent">Baby</span></h2>
+                            <p data-part class="c-accent mt-4 text-xl font-medium sm:text-2xl">First words, in every language you speak at home.</p>
+                            <p data-part class="c-muted mt-6 max-w-[54ch] text-[1.05rem] leading-relaxed">
+                                A first-words tracker for bilingual families. DuoBaby suggests age-appropriate words to teach, keeps track of every new one, and offers tips along the way — in around 120 languages.
+                            </p>
+                            <ul data-part class="c-line mt-8 border-t">
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>AI-suggested words for your child's age</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Every new word, tracked in both languages</span></li>
+                                <li class="c-line flex gap-4 border-b py-3"><span class="c-accent font-mono text-xs">—</span><span>Around 120 languages supported</span></li>
+                            </ul>
+                            <div data-part class="mt-9 flex flex-wrap gap-3">
+                                <a href="https://apps.apple.com/us/app/duobaby/id6755917419" class="btn btn-primary">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                                    App Store
+                                </a>
+                            </div>
+                        </div>
+                        <div class="mt-16 flex justify-center lg:hidden">
+                            <div class="iphone iphone--inline">
+                                <div class="iphone__bezel"><div class="iphone__screen">
+                                    <div class="screen-layer screen-launch is-current"><img src="assets/icons/duobaby-icon.png" alt="DuoBaby" loading="lazy"></div>
+                                    <div class="iphone__island"></div>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Device column: sticky inside the chapters, so it only exists
+                 while the app chapters are on screen. -->
+            <div class="relative hidden lg:col-span-5 lg:block" aria-hidden="true">
+                <div class="device-stage sticky top-0 flex h-[100svh] flex-col items-center justify-center pr-6 xl:pr-12">
+                    <div class="ghost-index">
+                        <span class="is-current">001</span><span>002</span><span>003</span><span>004</span>
+                    </div>
+
+                    <div id="device-entry" class="relative">
+                        <div class="device-glow"></div>
+                        <div id="device-tilt">
+                            <div class="iphone" style="--w: min(clamp(250px, 22vw, 330px), calc((100svh - 250px) / 2.1))">
+                                <span class="iphone__btn iphone__btn--action"></span>
+                                <span class="iphone__btn iphone__btn--volup"></span>
+                                <span class="iphone__btn iphone__btn--voldn"></span>
+                                <span class="iphone__btn iphone__btn--power"></span>
+                                <div class="iphone__bezel">
+                                    <div class="iphone__screen">
+                                        <img src="assets/screens/eotc-calendar.jpg" alt="" class="screen-layer is-current" data-screen="0" decoding="async">
+                                        <img src="assets/screens/ethiopian-calendar.jpg" alt="" class="screen-layer" data-screen="1" decoding="async">
+                                        <img src="assets/screens/nuru.jpg" alt="" class="screen-layer" data-screen="2" decoding="async">
+                                        <div class="screen-layer screen-launch" data-screen="3"><img src="assets/icons/duobaby-icon.png" alt="" decoding="async"></div>
+                                        <div class="wipe-edge"></div>
+                                        <div class="iphone__island"></div>
+                                        <div class="iphone__glare"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="device-shadow" style="--w: min(clamp(250px, 22vw, 330px), calc((100svh - 250px) / 2.1))"></div>
+                    </div>
+
+                    <p class="mt-14 font-mono text-[.66rem] uppercase tracking-[.18em]" style="color: var(--chrome)">
+                        <span id="device-index">001</span> <span class="opacity-50">—</span> <span id="device-name">EOTC Calendar</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================== FOOTER =========================== -->
+        <!-- Tall on purpose: the stage needs this much scroll after the last
+             chapter to settle back onto the paper ground. -->
+        <footer class="mx-auto flex min-h-[85svh] max-w-[1320px] flex-col justify-end px-5 pb-12 pt-32 sm:px-8 lg:px-12">
+            <p class="mb-16 font-sans text-[clamp(3.2rem,11vw,9.5rem)] font-light uppercase leading-none tracking-[.3em]">Fueera</p>
+            <div class="flex flex-col gap-10 border-t pt-10 sm:flex-row sm:items-end sm:justify-between" style="border-color: color-mix(in srgb, var(--ink) 18%, transparent)">
+                <div>
+                    <p class="max-w-[40ch] text-ink-soft">Questions about any of our apps? We read every message.</p>
+                </div>
+                <nav class="flex flex-wrap gap-x-8 gap-y-3 font-mono text-[.68rem] uppercase tracking-[.14em]" aria-label="Footer">
+                    <a href="mailto:support@fueera.com" class="hover:underline">support@fueera.com</a>
+                    <a href="privacy-policy/" class="hover:underline">Privacy Policy</a>
+                    <a href="https://fueera.com" class="hover:underline">fueera.com</a>
+                </nav>
+            </div>
+            <p class="mt-10 font-mono text-[.64rem] uppercase tracking-[.14em] text-ink-soft">&copy; 2026 Fueera LLC</p>
+        </footer>
     </main>
 
-    <footer class="site-footer">
-        <div class="wrap">
-            <span class="mono">&copy; 2026 Fueera LLC</span>
-            <nav class="footer-links mono">
-                <a href="mailto:support@fueera.com">support@fueera.com</a>
-                <a href="/privacy-policy/">Privacy Policy</a>
-                <a href="https://fueera.com">fueera.com</a>
-            </nav>
-        </div>
-    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
 
-    <script src="assets/js/motion.js?v=2" defer></script>
+        var APPS = [
+            { name: 'EOTC Calendar',                bg: '#14245a', fg: '#f5efe2', accent: '#e9a94b' },
+            { name: 'Ethiopian Calendar & Widgets', bg: '#8a5a17', fg: '#fdf5e4', accent: '#ffd98a' },
+            { name: 'NURU — Digital Fasting',       bg: '#0e1316', fg: '#ece6dc', accent: '#e0904f' },
+            { name: 'DuoBaby',                      bg: '#f5ead3', fg: '#24324a', accent: '#23699a' }
+        ];
+
+        /* ------------------------------------------------------------------
+           Today's date in the Ethiopian calendar, shown in chapter 002.
+           Fixed-date algorithm from Dershowitz & Reingold, Calendrical
+           Calculations: Amete Mihret epoch = JDN 1724221.
+           ------------------------------------------------------------------ */
+        (function ethiopianToday() {
+            var MONTHS = ['Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit', 'Megabit', 'Miyazya', 'Ginbot', 'Sene', 'Hamle', 'Nehase', 'Pagume'];
+            var MONTHS_AM = ['መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'];
+            var HOLIDAYS = { '1-1': 'Enkutatash', '1-17': 'Meskel', '5-11': 'Timket', '6-23': 'Adwa Victory Day', '8-27': "Patriots' Day" };
+
+            function geez(n) {
+                var ones = ['', '፩', '፪', '፫', '፬', '፭', '፮', '፯', '፰', '፱'];
+                var tens = ['', '፲', '፳', '፴', '፵', '፶', '፷', '፸', '፹', '፺'];
+                function two(x) { return tens[Math.floor(x / 10)] + ones[x % 10]; }
+                if (n < 100) return two(n);
+                var hi = Math.floor(n / 100), lo = n % 100;
+                return (hi === 1 ? '' : two(hi)) + '፻' + (lo ? two(lo) : '');
+            }
+
+            var now = new Date();
+            var jdn = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000) + 2440588;
+            var EPOCH = 1724221;
+            var year = Math.floor((4 * (jdn - EPOCH) + 1463) / 1461);
+            var start = EPOCH - 1 + 365 * (year - 1) + Math.floor(year / 4) + 1;
+            var month = Math.floor((jdn - start) / 30) + 1;
+            var day = jdn - start - (month - 1) * 30 + 1;
+
+            var holiday = HOLIDAYS[month + '-' + day];
+            var en = document.getElementById('ethio-today');
+            var am = document.getElementById('ethio-today-am');
+            en.textContent = 'Today · ' + MONTHS[month - 1] + ' ' + day + ', ' + year + (holiday ? ' · ' + holiday : '');
+            am.textContent = MONTHS_AM[month - 1] + ' ' + geez(day) + ' ' + geez(year);
+            en.hidden = false;
+            am.hidden = false;
+        })();
+
+        if (!window.gsap || !window.ScrollTrigger) return;   // page still reads fine without the engine
+        gsap.registerPlugin(ScrollTrigger);
+
+        var root = document.documentElement;
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var chapters = document.getElementById('chapters');
+        var sections = Array.prototype.slice.call(document.querySelectorAll('.chapter'));
+
+        /* ------------------------------------------------------------------
+           Background engine.
+           One scrubbed timeline over the whole chapters block, laid out in
+           scroll pixels from real section offsets, so it stays correct when
+           sections differ in height. Each crossfade is centred on the seam
+           between two chapters and spans 44% of a viewport, so every colour
+           holds while its chapter is centred. A single timeline avoids the
+           ordering conflicts of several scrubbed tweens on the same property.
+           ------------------------------------------------------------------ */
+        var bgST = null;
+
+        function buildBackground() {
+            if (bgST) { bgST.animation.kill(); bgST.kill(); }
+
+            var vh = window.innerHeight;
+            var wrapTop = chapters.getBoundingClientRect().top + window.scrollY;
+            var total = chapters.offsetHeight;
+            var span = vh * 0.22;
+
+            // Furthest this timeline can actually be scrubbed: the page may end
+            // before the chapters block has fully scrolled away.
+            var maxScroll = root.scrollHeight - vh;
+            var reach = maxScroll - (wrapTop - vh);
+            // Text colour snaps rather than blends: over a mid-grey ground a
+            // half-blended text colour drops to ~1:1, while either end colour
+            // still holds ~3:1. Zero-duration sets flip at the exact midpoint
+            // of each crossfade and revert cleanly when scrubbing back.
+
+            var tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
+            tl.set(root, { '--m': 0, '--mc': 0, '--morph-bg': APPS[0].bg, '--morph-fg': APPS[0].fg, '--morph-accent': APPS[0].accent }, 0);
+            tl.to(root, { '--m': 1, duration: span * 2 }, vh / 2 - span);
+            tl.set(root, { '--mc': 1 }, vh / 2);
+
+            sections.forEach(function (sec, i) {
+                if (i === 0) return;
+                var seam = vh / 2 + (sec.getBoundingClientRect().top + window.scrollY - wrapTop);
+                tl.to(root, { '--morph-bg': APPS[i].bg, '--morph-accent': APPS[i].accent, duration: span * 2 }, seam - span);
+                tl.set(root, { '--morph-fg': APPS[i].fg }, seam);
+            });
+
+            var exitEnd = Math.min(vh / 2 + total + span, reach);
+            var exitStart = exitEnd - span * 2;
+            tl.to(root, { '--m': 0, duration: span * 2 }, exitStart);
+            tl.set(root, { '--mc': 0 }, exitStart + span);
+            tl.set({}, {}, total + vh);   // timeline length = the scroll distance below
+
+            bgST = ScrollTrigger.create({
+                trigger: chapters,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 0.4,
+                animation: tl
+            });
+            root.classList.add('morph-on');
+        }
+
+        /* ------------------------------------------------------------------
+           Device: clip-path wipe between screens.
+           Scrolling down, the next screen wipes up from the bottom edge;
+           scrolling back, it wipes down from the top. A thin accent line
+           rides the wipe edge.
+           ------------------------------------------------------------------ */
+        var layers = Array.prototype.slice.call(document.querySelectorAll('[data-screen]'));
+        var screenEl = document.querySelector('#device-tilt .iphone__screen');
+        var edge = document.querySelector('.wipe-edge');
+        var ghosts = Array.prototype.slice.call(document.querySelectorAll('.ghost-index span'));
+        var navDots = Array.prototype.slice.call(document.querySelectorAll('.nav-dot'));
+        var devIndex = document.getElementById('device-index');
+        var devName = document.getElementById('device-name');
+        var SHOWN = 'inset(0% 0% 0% 0%)';
+        var HIDDEN = 'inset(100% 0% 0% 0%)';
+        var current = 0;
+        var z = 10;
+        var DUR = 0.95;
+
+        layers.forEach(function (l, i) {
+            gsap.set(l, { clipPath: i === 0 ? SHOWN : HIDDEN, zIndex: i === 0 ? z : 1 });
+        });
+
+        function showScreen(i, dir) {
+            if (i === current) return;
+            var next = layers[i];
+            var prev = layers[current];
+            current = i;
+            gsap.killTweensOf([next, prev, edge]);
+            next.style.zIndex = ++z;
+
+            if (reduced) {
+                gsap.set(next, { clipPath: SHOWN, scale: 1, filter: 'brightness(1)' });
+                layers.forEach(function (l, k) { if (k !== i) gsap.set(l, { clipPath: HIDDEN }); });
+                return;
+            }
+
+            var from = dir >= 0 ? 'inset(100% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)';
+            var h = screenEl.clientHeight;
+            gsap.fromTo(next,
+                { clipPath: from, scale: 1.08, filter: 'brightness(1)' },
+                { clipPath: SHOWN, scale: 1, duration: DUR, ease: 'power3.inOut' });
+            gsap.to(prev, {
+                scale: 0.96, filter: 'brightness(0.55)', duration: DUR, ease: 'power3.inOut',
+                onComplete: function () { gsap.set(prev, { clipPath: HIDDEN, scale: 1, filter: 'brightness(1)' }); }
+            });
+            gsap.fromTo(edge,
+                { y: dir >= 0 ? h : 0, opacity: 1 },
+                { y: dir >= 0 ? 0 : h, duration: DUR, ease: 'power3.inOut', onComplete: function () { gsap.set(edge, { opacity: 0 }); } });
+        }
+
+        function setActive(i, dir) {
+            showScreen(i, dir);
+            navDots.forEach(function (d, k) { d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+            ghosts.forEach(function (g, k) {
+                g.classList.toggle('is-current', k === i);
+                if (reduced) { gsap.set(g, { opacity: k === i ? 1 : 0 }); return; }
+                gsap.to(g, { opacity: k === i ? 1 : 0, y: k === i ? 0 : (k < i ? -40 : 40), duration: 0.8, ease: 'power3.out' });
+            });
+            devIndex.textContent = '00' + (i + 1);
+            devName.textContent = APPS[i].name;
+        }
+
+        sections.forEach(function (sec, i) {
+            ScrollTrigger.create({
+                trigger: sec,
+                start: 'top center',
+                end: 'bottom center',
+                onToggle: function (self) { if (self.isActive) setActive(i, self.direction); }
+            });
+        });
+
+        ScrollTrigger.create({
+            trigger: chapters,
+            start: 'top center',
+            end: 'bottom center',
+            onLeave: function () { navDots.forEach(function (d) { d.setAttribute('aria-current', 'false'); }); },
+            onLeaveBack: function () { navDots.forEach(function (d) { d.setAttribute('aria-current', 'false'); }); }
+        });
+
+        /* ------------------------------------------------------------------
+           Pointer tilt with lerp damping. The target angle follows the
+           pointer's offset from the device centre; the rendered angle eases
+           toward it each frame, which is what gives the flat screenshot its
+           sense of physical weight. Only runs while the device is on screen.
+           ------------------------------------------------------------------ */
+        var tiltEl = document.getElementById('device-tilt');
+        var entryEl = document.getElementById('device-entry');
+        var glare = document.querySelector('.iphone__glare');
+        var shadow = document.querySelector('.device-shadow');
+        var BASE = { x: 5, y: -15, z: 1.2 };
+        var MAX_Y = 9, MAX_X = 7, LERP = 0.075;
+        var tx = 0, ty = 0, cx = 0, cy = 0, running = false;
+
+        function renderTilt() {
+            tiltEl.style.transform = 'rotateX(' + (BASE.x + cy).toFixed(3) + 'deg) rotateY(' + (BASE.y + cx).toFixed(3) + 'deg) rotateZ(' + BASE.z + 'deg)';
+            glare.style.setProperty('--gx', (-cx * 2.4).toFixed(2) + '%');
+            shadow.style.transform = 'translateX(' + (-cx * 2.2).toFixed(2) + 'px)';
+        }
+        renderTilt();
+
+        var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        if (!reduced && finePointer) {
+            window.addEventListener('pointermove', function (e) {
+                var r = entryEl.getBoundingClientRect();
+                var nx = (e.clientX - (r.left + r.width / 2)) / (window.innerWidth * 0.5);
+                var ny = (e.clientY - (r.top + r.height / 2)) / (window.innerHeight * 0.5);
+                tx = Math.max(-1, Math.min(1, nx)) * MAX_Y;
+                ty = Math.max(-1, Math.min(1, ny)) * -MAX_X;
+            }, { passive: true });
+            document.documentElement.addEventListener('mouseleave', function () { tx = 0; ty = 0; });
+
+            var loop = function () {
+                cx += (tx - cx) * LERP;
+                cy += (ty - cy) * LERP;
+                renderTilt();
+                if (running) requestAnimationFrame(loop);
+            };
+            ScrollTrigger.create({
+                trigger: chapters,
+                start: 'top bottom',
+                end: 'bottom top',
+                onToggle: function (self) {
+                    var was = running;
+                    running = self.isActive;
+                    if (running && !was) requestAnimationFrame(loop);
+                }
+            });
+        }
+
+        /* ------------------------------------------------------------------
+           Scrubbed reveals: hero on load, chapter copy and device entry on
+           desktop. Skipped entirely under reduced motion and on small screens,
+           where chapters run taller than the viewport.
+           ------------------------------------------------------------------ */
+        if (!reduced) {
+            gsap.from('.hero-part', { opacity: 0, y: 26, duration: 1, stagger: 0.08, ease: 'power3.out', delay: 0.1 });
+        }
+
+        var mm = gsap.matchMedia();
+        mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', function () {
+            sections.forEach(function (sec) {
+                var parts = sec.querySelectorAll('[data-part]');
+                gsap.timeline({ scrollTrigger: { trigger: sec, start: 'top bottom', end: 'bottom top', scrub: 0.5 } })
+                    .fromTo(parts, { opacity: 0.12, y: 56 }, { opacity: 1, y: 0, duration: 0.24, stagger: 0.015, ease: 'none' }, 0.1)
+                    .to(parts, { opacity: 0.12, y: -56, duration: 0.24, stagger: 0.015, ease: 'none' }, 0.66)
+                    .set({}, {}, 1);
+            });
+
+            gsap.fromTo(entryEl,
+                { yPercent: 22, rotateY: -38, rotateX: 16, scale: 0.88, opacity: 0 },
+                { yPercent: 0, rotateY: 0, rotateX: 0, scale: 1, opacity: 1, ease: 'none',
+                  scrollTrigger: { trigger: chapters, start: 'top bottom', end: 'top top', scrub: 0.6 } });
+        });
+
+        /* Build after fonts settle (their metrics change section heights),
+           and rebuild on resize so the colour seams stay on the section seams. */
+        function rebuild() { buildBackground(); ScrollTrigger.refresh(); }
+        buildBackground();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(rebuild);
+        window.addEventListener('load', rebuild);
+        var resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(rebuild, 180);
+        });
+    })();
+    </script>
 </body>
 </html>

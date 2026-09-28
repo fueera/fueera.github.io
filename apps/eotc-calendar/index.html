@@ -18,7 +18,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&family=Noto+Serif+Ethiopic:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wdth,wght@75..100,300..800&family=Noto+Serif+Ethiopic:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -227,7 +227,11 @@
         .wt-bars span { height: 3px; flex: 1; background: var(--stage-line); transition: background-color .35s; }
         .wt-bars span.is-on { background: var(--accent); }
 
-        /* ---------------- Lock Screen widget ---------------- */
+        /* ---------------- Lock Screen widget ----------------
+           The widgets sit where iOS puts them: small, bare text (no card)
+           in the row just above the flashlight and camera. Sizes are in
+           cqw, a share of the phone's own width. */
+        .lock { container-type: inline-size; }
         .lock-screen {
             position: relative;
             width: 100%; aspect-ratio: 9 / 19.5;
@@ -243,24 +247,23 @@
         .lock-island { position: absolute; top: 3.2%; left: 50%; width: 30%; height: 3.6%; transform: translateX(-50%); background: #000; border-radius: 99px; }
         .lock-date { position: absolute; top: 12%; inset-inline: 0; text-align: center; font-weight: 600; font-size: clamp(.8rem, 4.4cqw, 1rem); opacity: .9; }
         .lock-time { position: absolute; top: 14.5%; inset-inline: 0; text-align: center; font-weight: 700; font-size: 25cqw; line-height: 1.1; letter-spacing: -.02em; opacity: .95; }
-        .lock-widget {
-            position: absolute; top: 36%; left: 9%; right: 9%;
-            display: flex; justify-content: space-between; gap: .5rem;
-            padding: 5.2cqw 5.4cqw;
-            border-radius: 6.5cqw;
-            background: linear-gradient(180deg, rgba(178, 196, 207, .62), rgba(118, 138, 150, .55));
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 10px 30px -10px rgba(0, 0, 0, .5);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, .18);
+        .lock-widgets {
+            position: absolute; left: 9.8%; right: 12%; top: 78.2%;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .12);
         }
-        .lock { container-type: inline-size; }
-        .w-main { font-weight: 800; font-size: 7.2cqw; line-height: 1.1; letter-spacing: .01em; }
-        .w-main.is-ethi { font-family: "Noto Serif Ethiopic", serif; font-size: 6.6cqw; }
-        .w-sub { font-size: 4.6cqw; opacity: .78; margin-top: .25em; }
-        .w-alt { font-family: "Noto Serif Ethiopic", serif; font-weight: 600; font-size: 4.8cqw; margin-top: .15em; }
-        .w-alt.is-latin { font-family: "Open Sans", sans-serif; font-weight: 700; letter-spacing: .06em; }
-        .w-addis { font-weight: 800; font-size: 7.2cqw; line-height: 1.1; white-space: nowrap; }
-        .w-addis-label { font-size: 3.9cqw; letter-spacing: .08em; opacity: .78; margin-top: .3em; text-transform: uppercase; }
-        .w-addis-label.is-ethi { font-family: "Noto Serif Ethiopic", serif; letter-spacing: 0; text-transform: none; }
+        .w-rect { display: flex; gap: 8.4cqw; }
+        .w-main, .w-addis { font-weight: 700; font-stretch: 82%; font-size: 3.7cqw; line-height: 1.15; letter-spacing: .01em; white-space: nowrap; }
+        .w-main.is-ethi { font-family: "Noto Serif Ethiopic", serif; font-stretch: 100%; font-size: 3.4cqw; }
+        .w-sub { font-size: 3.2cqw; opacity: .62; margin-top: .3em; }
+        .w-alt { font-family: "Noto Serif Ethiopic", serif; font-weight: 600; font-size: 3.2cqw; margin-top: .15em; }
+        .w-alt.is-latin { font-family: "Open Sans", sans-serif; font-weight: 700; font-stretch: 82%; letter-spacing: .04em; }
+        .w-addis-label { font-size: max(8px, 2.5cqw); letter-spacing: .04em; opacity: .62; margin-top: .45em; text-transform: uppercase; }
+        .w-addis-label.is-ethi { font-family: "Noto Serif Ethiopic", serif; letter-spacing: 0; text-transform: none; font-size: max(8px, 2.7cqw); }
+        .w-circ { text-align: center; line-height: 1; }
+        .w-circ-month { font-family: "Noto Serif Ethiopic", serif; font-weight: 600; font-size: 2.9cqw; opacity: .9; }
+        .w-circ-day { font-weight: 700; font-size: 6.4cqw; margin-top: .12em; }
+        .w-circ-day.is-ethi { font-family: "Noto Serif Ethiopic", serif; font-size: 5.6cqw; }
         .lock-btns { position: absolute; bottom: 6.5%; left: 12%; right: 12%; display: flex; justify-content: space-between; }
         .lock-btns span { width: 13cqw; aspect-ratio: 1; border-radius: 50%; background: rgba(0, 0, 0, .28); display: grid; place-items: center; }
         .lock-btns svg { width: 45%; height: 45%; opacity: .9; }
@@ -500,15 +503,23 @@
                         <div class="lock-island"></div>
                         <p class="lock-date" id="lock-date">Sunday, September 27</p>
                         <p class="lock-time" id="lock-time">9:41</p>
-                        <div class="lock-widget">
-                            <div class="min-w-0">
-                                <p class="w-main" id="w-main">MESKEREM 17</p>
-                                <p class="w-sub" id="w-sub">Sep 27</p>
-                                <p class="w-alt" id="w-alt" lang="am">መስከረም</p>
+                        <!-- The widget row, just above the flashlight and camera:
+                             EOTC's rectangular widget, and its small month-and-day one. -->
+                        <div class="lock-widgets">
+                            <div class="w-rect">
+                                <div>
+                                    <p class="w-main" id="w-main">MESKEREM 17</p>
+                                    <p class="w-sub" id="w-sub">Sep 27</p>
+                                    <p class="w-alt" id="w-alt" lang="am">መስከረም</p>
+                                </div>
+                                <div>
+                                    <p class="w-addis" id="w-addis">10:47 PM</p>
+                                    <p class="w-addis-label" id="w-addis-label">Addis time</p>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <p class="w-addis" id="w-addis">10:47 PM</p>
-                                <p class="w-addis-label" id="w-addis-label">Addis time</p>
+                            <div class="w-circ">
+                                <p class="w-circ-month" id="w-circ-month" lang="am">መስከረም</p>
+                                <p class="w-circ-day" id="w-circ-day">17</p>
                             </div>
                         </div>
                         <div class="lock-btns" aria-hidden="true">
@@ -893,12 +904,13 @@
                 date: document.getElementById('lock-date'), time: document.getElementById('lock-time'),
                 main: document.getElementById('w-main'), sub: document.getElementById('w-sub'), alt: document.getElementById('w-alt'),
                 addis: document.getElementById('w-addis'), label: document.getElementById('w-addis-label'),
+                circMonth: document.getElementById('w-circ-month'), circDay: document.getElementById('w-circ-day'),
                 live: document.getElementById('lock-label')
             };
             var addisFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'Africa/Addis_Ababa', hour: 'numeric', minute: '2-digit' });
             var clockFmt = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
-            var dateFmt = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
             var shortFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+            var dateFmt = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
             var last = '';
 
             function opt(name) { return document.querySelector('input[name="' + name + '"]:checked').value; }
@@ -927,7 +939,11 @@
                 el.addis.textContent = addisFmt.format(now);
                 el.label.textContent = am ? 'አዲስ አበባ' : 'Addis time';
                 el.label.classList.toggle('is-ethi', am);
-                el.live.textContent = 'Lock Screen preview. Widget shows ' + CAL.MONTHS[e.m - 1] + ' ' + e.d + ', ' +
+                // The small round widget is always the Amharic month over the day.
+                el.circMonth.textContent = CAL.MONTHS_AM[e.m - 1];
+                el.circDay.textContent = dayNum;
+                el.circDay.classList.toggle('is-ethi', ge);
+                el.live.textContent = 'Lock Screen preview. The widgets show ' + CAL.MONTHS[e.m - 1] + ' ' + e.d + ', ' +
                     shortFmt.format(now) + ', and ' + addisFmt.format(now) + ' in Addis Ababa' +
                     (am ? ', in Amharic' : '') + (ge ? ', with Ge\'ez numerals' : '') + '.';
             }

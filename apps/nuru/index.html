@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NURU — Digital Fasting — Fueera LLC</title>
-    <meta name="description" content="NURU is a digital fasting app for iPhone. Set a challenge, block distracting apps, fast together in Circles with a shared daily break window, and track your streaks.">
+    <meta name="description" content="NURU is a digital fasting app for iPhone and iPad. Set a fast, shield the apps that pull at you, fast together in Circles with a shared daily break window, and pause before any early unlock.">
     <link rel="canonical" href="https://apps.fueera.com/apps/nuru/">
     <link rel="icon" href="../../assets/icons/nuru-icon.png">
     <meta property="og:title" content="NURU — Digital Fasting">
@@ -19,168 +19,992 @@
     <meta property="og:locale" content="en_US">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2eee2">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#222222">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1417">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300..900&family=Julius+Sans+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/site.css?v=2">
-    <script>document.documentElement.classList.add('js');</script>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300..800&family=Julius+Sans+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Jost', 'Futura', '"Century Gothic"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        mono: ['"Space Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+                        mark: ['"Julius Sans One"', 'Jost', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        paper: 'var(--paper)',
+                        ink: 'var(--ink)',
+                        'ink-soft': 'var(--ink-soft)',
+                        accent: 'var(--accent)',
+                        'accent-text': 'var(--accent-text)',
+                    },
+                },
+            },
+        };
+    </script>
+
     <style>
+        /* ------------------------------------------------------------------
+           Tokens. The page follows the viewer's theme; the walkthrough and
+           the Mindful Unlock device stay dark in both, because they present
+           NURU's own dark interface.
+           ------------------------------------------------------------------ */
         :root {
+            color-scheme: light dark;
+            --paper: #f2eee2;
+            --ink: #1c2327;
+            --ink-soft: #5c6569;
+            --line: rgba(28, 35, 39, .14);
             --accent: #e0904f;
-            --accent-ink: #10191f;
-            --brand-bg: #101c22;
+            --accent-text: #a95a23;
+            --stage: #0b1114;
+            --stage-ink: #ece6dc;
+            --stage-soft: #97a1a6;
+            --stage-line: rgba(236, 230, 220, .12);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #0e1417;
+                --ink: #ece6dc;
+                --ink-soft: #97a1a6;
+                --line: rgba(236, 230, 220, .12);
+                --accent-text: #eaa46d;
+            }
         }
 
-        /* The App Store wordmark is Sackers Gothic Light — a Monotype face
-           that cannot be licensed for web use. Julius Sans One is the closest
-           open equivalent: a light, wide, uppercase engravers-style geometric. */
-        .hero h1 {
-            font-family: "Julius Sans One", "Jost", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-weight: 400;
-            letter-spacing: 0.11em;
+        /* No CSS smooth scrolling: ScrollTrigger sets the scroll position
+           itself when it re-measures, and would animate those jumps. The
+           one in-page link scrolls smoothly from script instead. */
+        body { background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+        h1, h2, h3 { text-wrap: balance; }
+        ::selection { background: var(--accent); color: #10191f; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+        .site-nav {
+            background: color-mix(in srgb, var(--paper) 84%, transparent);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: .6rem;
+            padding: .95rem 1.4rem;
+            font-family: "Space Mono", ui-monospace, monospace;
+            font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+            border: 1.5px solid transparent;
+            transition: transform .25s, background-color .25s, color .25s, border-color .25s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--accent); color: #10191f; }
+        .btn-ghost { border-color: color-mix(in srgb, var(--ink) 35%, transparent); color: var(--ink); }
+        .btn-ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+        .btn svg { width: 15px; height: 15px; flex: none; }
+
+        .chip { border: 1px solid var(--line); padding: .45rem .8rem; }
+
+        /* ---------------- Hero ring ---------------- */
+        .ring-wrap { position: relative; aspect-ratio: 1; width: min(440px, 88vw); }
+        .ring-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+        /* ---------------- iPhone (shared with the landing page) ---------------- */
+        .iphone {
+            --w: 260px;
+            position: relative;
+            width: var(--w); height: calc(var(--w) * 2.1);
+            border-radius: calc(var(--w) * .165);
+            background: linear-gradient(145deg, #57544f 0%, #1f1e1c 36%, #2d2b29 64%, #5d5a55 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, .22),
+                inset 0 0 0 calc(var(--w) * .007) #0c0c0c,
+                0 calc(var(--w) * .1) calc(var(--w) * .22) calc(var(--w) * -.06) rgba(0, 0, 0, .6);
+            transition: box-shadow .5s;
+        }
+        .iphone__bezel { position: absolute; inset: calc(var(--w) * .014); border-radius: calc(var(--w) * .152); background: #050505; padding: calc(var(--w) * .026); }
+        .iphone__screen { position: relative; width: 100%; height: 100%; border-radius: calc(var(--w) * .128); overflow: hidden; background: #000; isolation: isolate; }
+        .iphone__screen > img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+        .iphone__island { position: absolute; z-index: 5; top: calc(var(--w) * .024); left: 50%; width: calc(var(--w) * .29); height: calc(var(--w) * .08); transform: translateX(-50%); background: #000; border-radius: 999px; }
+
+        /* ---------------- Walkthrough ----------------
+           Without GSAP (or with reduced motion) the track is a native
+           swipeable strip. Once pinning is live, .is-pinned hides overflow
+           and scroll drives the track instead. */
+        .walkthrough { background: var(--stage); color: var(--stage-ink); }
+        .wt-track {
+            display: flex; align-items: center;
+            overflow-x: auto; scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+        .wt-track::-webkit-scrollbar { display: none; }
+        .walkthrough.is-pinned .wt-track { overflow: visible; scroll-snap-type: none; will-change: transform; }
+        .wt-panel, .wt-intro { flex: 0 0 auto; scroll-snap-align: center; }
+        .wt-panel { perspective: 1400px; transition: opacity .5s, filter .5s; }
+        /* Phone width from the height left over. Stacked (phones, tablets):
+           nav 64 + progress row 56 + gap 24 + the longest caption ~180
+           + breathing room. Side by side (desktop): only the phone's own
+           height has to fit between the nav and the progress row. */
+        .wt-panel { --pw: min(250px, calc((100svh - 345px) / 2.1)); }
+        @media (min-width: 1024px) {
+            .wt-panel { --pw: min(250px, calc((100svh - 230px) / 2.1)); }
+        }
+        /* Phones held sideways: too short to stack, so sit the caption
+           beside the phone as on desktop. */
+        @media (orientation: landscape) and (max-height: 540px) and (max-width: 1023px) {
+            .wt-panel { --pw: calc((100svh - 150px) / 2.1); }
+            .wt-panel > div { flex-direction: row; align-items: center; }
+            /* The caption sits to the right here, so the banner overhangs
+               to the left instead. */
+            .wt-shake .shield-banner { left: auto; right: -8%; margin-left: 0; }
+        }
+        .wt-panel .iphone { --w: var(--pw); }
+        .wt-phone { transform-style: preserve-3d; will-change: transform, opacity; }
+        .wt-soft { color: var(--stage-soft); }
+        .wt-line { border-color: var(--stage-line); }
+
+        .wt-track.is-alert .wt-panel:not(.wt-block) { opacity: .16; filter: saturate(.3); }
+
+        /* Block Screen alert: rings, a shield banner over the phone, a glow
+           and one short shake. Emphasis on the shield taking hold. */
+        .wt-shake { position: relative; }
+        .shield-rings span {
+            position: absolute; left: 50%; top: 45%;
+            width: calc(var(--pw, 250px) * 1.15); aspect-ratio: 1;
+            border: 1.5px solid var(--accent); border-radius: 50%;
+            transform: translate(-50%, -50%) scale(.45); opacity: 0;
+            pointer-events: none;
+        }
+        .wt-track.is-alert .shield-rings span { animation: shield-ring 2.4s cubic-bezier(.2, .6, .3, 1) infinite; }
+        .wt-track.is-alert .shield-rings span:nth-child(2) { animation-delay: .8s; }
+        .wt-track.is-alert .shield-rings span:nth-child(3) { animation-delay: 1.6s; }
+        @keyframes shield-ring { 0% { transform: translate(-50%, -50%) scale(.45); opacity: .7; } 100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; } }
+
+        .shield-banner {
+            /* A little wider than the phone, and never so narrow that the
+               message wraps into a column on small screens. */
+            --bw: max(128%, 212px);
+            position: absolute; z-index: 10;
+            left: 50%; top: 7%;
+            width: var(--bw); margin-left: calc(var(--bw) / -2);
+            display: flex; gap: .8rem; align-items: center;
+            padding: .8rem 1rem;
+            /* Solid rather than backdrop-blurred: the banner rides a layer
+               that moves every frame, and a live blur behind it would be
+               recomputed each time. */
+            background: rgba(14, 20, 23, .95);
+            border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+            border-radius: 18px;
+            box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .7), 0 0 0 4px rgba(224, 144, 79, .08);
+            opacity: 0; transform: translateY(-18px) scale(.96);
+            transition: opacity .45s cubic-bezier(.16, 1, .3, 1), transform .6s cubic-bezier(.34, 1.56, .64, 1);
+            pointer-events: none;
+        }
+        .shield-banner svg { width: 30px; height: 30px; flex: none; color: var(--accent); }
+        .wt-track.is-alert .shield-banner { opacity: 1; transform: none; }
+        .wt-track.is-alert .wt-block .iphone {
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, .22),
+                0 0 0 2px color-mix(in srgb, var(--accent) 70%, transparent),
+                0 0 70px 12px rgba(224, 144, 79, .28),
+                0 30px 60px -20px rgba(0, 0, 0, .7);
+        }
+        .wt-track.is-alert .wt-block .wt-shake { animation: shield-shake .42s cubic-bezier(.36, .07, .19, .97) both; }
+        @keyframes shield-shake {
+            10%, 90% { transform: translateX(-2px); }
+            20%, 80% { transform: translateX(4px); }
+            30%, 50%, 70% { transform: translateX(-6px); }
+            40%, 60% { transform: translateX(6px); }
+        }
+
+        .wt-arrow {
+            display: grid; place-items: center;
+            width: 2.4rem; height: 2.4rem;
+            border: 1px solid var(--stage-line); border-radius: 999px;
+            color: var(--stage-ink); font-size: .95rem;
+            transition: border-color .25s, color .25s, opacity .25s;
+        }
+        .wt-arrow:hover { border-color: var(--accent); color: var(--accent); }
+        .wt-arrow:disabled { opacity: .3; pointer-events: none; }
+        /* Narrow static strip: the arrows need the room, and the label
+           already says which screen this is. */
+        @media (max-width: 639px) { .walkthrough.is-static .wt-bars { display: none; } }
+        .wt-bars span { height: 3px; flex: 1; background: var(--stage-line); transition: background-color .35s; }
+        .wt-bars span.is-on { background: var(--accent); }
+
+        /* ---------------- Mindful Unlock widget ---------------- */
+        /* Width comes from the .unlock wrapper: every view inside is
+           absolutely positioned, so a percentage-only width here would
+           resolve against a zero-width flex item and collapse. */
+        .unlock-screen {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 9 / 15;
+            background: radial-gradient(120% 80% at 50% 0%, #13202a 0%, #0a1115 60%);
+            color: #ece6dc;
+            border-radius: 38px;
+            border: 1px solid rgba(236, 230, 220, .1);
+            box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .55), inset 0 0 0 6px #050505;
+            overflow: hidden;
+        }
+        .u-view {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 2.6rem 1.6rem 1.8rem;
+            text-align: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity .5s cubic-bezier(.16, 1, .3, 1), visibility 0s linear .5s, transform .6s cubic-bezier(.16, 1, .3, 1);
+            transform: translateY(10px);
+        }
+        .unlock[data-state="idle"] .u-idle,
+        .unlock[data-state="counting"] .u-count,
+        .unlock[data-state="prompt"] .u-prompt,
+        .unlock[data-state="back"] .u-back {
+            opacity: 1; visibility: visible; transform: none;
+            transition: opacity .5s cubic-bezier(.16, 1, .3, 1), visibility 0s, transform .6s cubic-bezier(.16, 1, .3, 1);
+        }
+        .u-app {
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; gap: .55rem;
+            padding: 1rem .5rem .85rem;
+            border-radius: 20px;
+            background: rgba(236, 230, 220, .05);
+            border: 1px solid rgba(236, 230, 220, .08);
+            transition: background-color .3s, border-color .3s, transform .3s;
+        }
+        .u-app:hover, .u-app:focus-visible { background: rgba(224, 144, 79, .1); border-color: rgba(224, 144, 79, .45); transform: translateY(-2px); }
+        .u-app svg.u-icon { width: 26px; height: 26px; opacity: .85; }
+        .u-lock { position: absolute; top: .45rem; right: .5rem; width: 14px; height: 14px; color: var(--accent); }
+        .u-ring { width: 170px; height: 170px; transform: rotate(-90deg); }
+        .u-ring circle { fill: none; stroke-width: 3; }
+        .u-ring .u-track { stroke: rgba(236, 230, 220, .1); }
+        .u-ring .u-fg { stroke: var(--accent); stroke-linecap: round; }
+        .u-return {
+            width: 100%;
+            padding: .95rem 1rem;
+            border-radius: 16px;
+            background: rgba(224, 144, 79, .16);
+            color: #f3c9a4;
+            font-family: "Space Mono", monospace; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+            transition: background-color .3s;
+        }
+        .u-return:hover { background: rgba(224, 144, 79, .26); }
+
+        .loop-step { border-color: var(--line); transition: opacity .4s, border-color .4s; opacity: .45; }
+        .loop-step.is-on { opacity: 1; border-color: var(--accent); }
+        .loop-step.is-on .loop-num { color: var(--accent-text); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn:hover, .u-app:hover { transform: none; }
+            .wt-track.is-alert .shield-rings span,
+            .wt-track.is-alert .wt-block .wt-shake { animation: none; }
+            .u-view { transition: opacity .01s, visibility 0s; transform: none; }
+            .shield-banner, .wt-panel, .iphone { transition: none; }
         }
     </style>
 </head>
-<body>
+<body class="font-sans">
 
-    <div class="scroll-progress" aria-hidden="true"><span></span></div>
-    <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
-
-    <nav class="site-nav">
-        <div class="wrap">
-            <a href="../../" class="nav-brand">Fueera<sup>®</sup></a>
-            <span class="nav-mid mono">NURU / Digital Fasting</span>
-            <a href="../../" class="nav-back mono">[ All apps ]</a>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="hero-grid">
-            <div class="hero-copy">
-                <img src="../../assets/icons/nuru-icon.png" alt="" class="hero-icon">
-                <h1 class="display" data-split>NURU</h1>
-                <p class="hero-tagline">Reclaim your attention. One day at a time.</p>
-                <ul class="hero-meta mono">
-                    <li>iPhone</li>
-                    <li>Digital Fasting</li>
-                    <li>Free</li>
-                </ul>
-                <div class="hero-actions">
-                    <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="btn" data-magnetic="0.3">
-                        <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                        App Store
-                    </a>
-                    <a href="#features" class="btn btn-ghost" data-magnetic="0.25">Features</a>
-                </div>
-            </div>
-            <div class="hero-media">
-                <img src="../../assets/screenshots/nuru/hero.jpg" alt="NURU showing an active digital fast with streak, days remaining, and hours protected" class="hero-shot" width="828" height="1792" data-parallax="0.06">
-            </div>
-        </div>
+    <!-- =========================== NAV =========================== -->
+    <header class="site-nav fixed inset-x-0 top-0 z-50">
+        <nav class="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-5 sm:px-8 lg:px-12" aria-label="Primary">
+            <a href="../../" class="text-[1.05rem] font-light uppercase tracking-[.42em]">Fueera</a>
+            <span class="hidden font-mono text-[.66rem] uppercase tracking-[.16em] text-ink-soft md:block">003 / NURU — Digital Fasting</span>
+            <a href="../../" class="font-mono text-[.66rem] uppercase tracking-[.16em] hover:underline">[ All apps ]</a>
+        </nav>
     </header>
 
-    <div class="marquee" aria-hidden="true">
-        <div class="marquee-track">
-            <span>Digital Fasting</span>
-            <span>Reclaim Your Attention</span>
-            <span>Fast Together</span>
-        </div>
-    </div>
-
     <main>
-        <section class="section" id="features">
-            <div class="section-head">
-                <span class="section-kicker mono">01 — What it does</span>
-                <h2 data-split>Fasting, for your attention</h2>
-                <p class="lede" data-reveal>NURU applies an old idea to a new problem. You choose how long to fast from the apps that pull at you, and NURU holds the line — quietly, with encouragement rather than shame. Do it alone, or join a Circle and fast alongside other people working on the same thing.</p>
+        <!-- =========================== 01 HERO =========================== -->
+        <section class="mx-auto grid max-w-[1320px] items-center gap-10 px-5 pb-16 pt-28 sm:px-8 lg:min-h-[88svh] lg:grid-cols-12 lg:gap-6 lg:px-12 lg:pb-10">
+            <div class="lg:col-span-7">
+                <div class="mb-8 flex items-center gap-4">
+                    <img src="../../assets/icons/nuru-icon.png" alt="" class="h-12 w-12 rounded-[22%]">
+                    <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-ink-soft">Productivity · iPhone &amp; iPad</p>
+                </div>
+
+                <h1 class="leading-none">
+                    <span class="block font-mark text-[clamp(3.6rem,11vw,8.6rem)] uppercase tracking-[.26em]">Nuru</span>
+                    <span class="mt-4 block text-[clamp(.85rem,1.5vw,1.2rem)] font-extrabold uppercase tracking-[.52em] text-accent-text">Digital&nbsp;Fasting</span>
+                </h1>
+
+                <p class="mt-10 max-w-[22ch] text-[clamp(1.5rem,2.8vw,2.3rem)] font-light leading-[1.15] tracking-[-.01em]">Reclaim your attention. One day at a time.</p>
+                <p class="mt-6 max-w-[54ch] text-[1.05rem] leading-relaxed text-ink-soft">
+                    NURU applies an old idea to a new problem. Choose how long to fast from the apps that pull at you, and system-level shields hold the line — quietly, with encouragement instead of shame. Fast alone, or with a Circle.
+                </p>
+
+                <div class="mt-9 flex flex-wrap gap-3">
+                    <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                        App Store
+                    </a>
+                    <a href="#walkthrough" class="btn btn-ghost">See a day of it</a>
+                </div>
+
+                <ul class="mt-8 flex flex-wrap gap-2 font-mono text-[.62rem] uppercase tracking-[.14em] text-ink-soft">
+                    <li class="chip">Free to download</li>
+                    <li class="chip">Circles Premium · 7-day trial</li>
+                </ul>
             </div>
 
-            <ol class="features" data-stagger>
-                <li class="feature">
-                    <span class="feature-num">01</span>
-                    <h3>Choose your fast</h3>
-                    <p>7, 30, 60, or 90 days — or set your own length. NURU tracks the day you are on, the days remaining, and the date you finish.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">02</span>
-                    <h3>Block what pulls at you</h3>
-                    <p>Social media, entertainment and streaming, news and doomscrolling — pick the categories, then the apps on your device that match.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">03</span>
-                    <h3>Fasting Circles</h3>
-                    <p>Create a circle or join one by code, or browse public tribes. Fasting together is the difference between a rule and a habit.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">04</span>
-                    <h3>A shared break window</h3>
-                    <p>Every circle has one daily break — 15 minutes, 30 minutes, or an hour — shown to each member in their own timezone, so a group across four cities still breaks together.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">05</span>
-                    <h3>Mindful unlock</h3>
-                    <p>Reach for a blocked app and you get a short timer and a question worth sitting with, instead of an instant override.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">06</span>
-                    <h3>Insights and streaks</h3>
-                    <p>Current streak, longest streak, total days, days you stayed strong, and the breaks you took — laid out week by week.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">07</span>
-                    <h3>Encouragement, not shame</h3>
-                    <p>Block screens remind you why you started — the streak you are holding, the days left, and the hours you have protected today.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">08</span>
-                    <h3>Custom schedules</h3>
-                    <p>Block for a whole fasting day, or set specific hours — perfect for work, prayer, study, or the first hour after waking.</p>
-                </li>
-            </ol>
-        </section>
-
-        <section class="section shots-section">
-            <div class="section-head">
-                <span class="section-kicker mono">02 — A closer look</span>
-                <h2 data-split>See it running</h2>
-            </div>
-            <div class="shots" data-drag>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/home.jpg" alt="NURU home screen showing day 2 of a 14 day challenge with days left and end date" width="828" height="1792" loading="lazy"><figcaption>01 / Today</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/insights.jpg" alt="Insights screen showing day streak, total days, longest streak, and weekly progress" width="828" height="1792" loading="lazy"><figcaption>02 / Insights</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/block-screen.jpg" alt="Block screen shown when a fasted app is opened, with streak and hours protected" width="828" height="1792" loading="lazy"><figcaption>03 / Block screen</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/circles.jpg" alt="Fasting Circles screen listing public tribes to browse and join" width="828" height="1792" loading="lazy"><figcaption>04 / Circles</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/create-circle.jpg" alt="Creating a circle: setting fasting duration, break window, and daily break time across timezones" width="828" height="1792" loading="lazy"><figcaption>05 / Create a circle</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/join-circle.jpg" alt="Joining a 20 day challenge showing duration, break window, members, and blocked categories" width="828" height="1792" loading="lazy"><figcaption>06 / Join by code</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/blocked-categories.jpg" alt="Required categories for a circle: social media, entertainment and streaming, news and reading" width="828" height="1792" loading="lazy"><figcaption>07 / What gets blocked</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/nuru/mindful-unlock.jpg" alt="Mindful unlock timer with a gratitude reflection prompt before returning" width="828" height="1792" loading="lazy"><figcaption>08 / Mindful unlock</figcaption></figure>
+            <!-- Protected-time ring: drawn procedurally, rotates slowly, leans
+                 toward the pointer. -->
+            <div class="flex justify-center lg:col-span-5 lg:justify-end">
+                <div class="ring-wrap" aria-hidden="true">
+                    <canvas id="ring"></canvas>
+                </div>
             </div>
         </section>
 
-        <section class="cta-section">
-            <div class="wrap">
-                <h2 class="display" data-split>Get NURU</h2>
-                <p>Free on the App Store for iPhone</p>
-                <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="btn" data-magnetic="0.35">
-                    <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                    Download
+        <!-- =========================== 02 WALKTHROUGH =========================== -->
+        <section id="walkthrough" class="walkthrough relative h-[100svh] overflow-hidden" aria-labelledby="wt-title">
+            <!-- Vertical padding keeps the screens clear of the fixed nav
+                 above and the progress row below. -->
+            <div class="wt-track h-full gap-[6vw] px-[6vw] pb-14 pt-16 lg:gap-[4vw]">
+
+                <div class="wt-intro w-[82vw] sm:w-[60vw] lg:w-[34vw]">
+                    <p class="mb-6 font-mono text-[.68rem] uppercase tracking-[.18em] text-accent">02 — A closer look</p>
+                    <h2 id="wt-title" class="text-[clamp(2rem,4vw,3.4rem)] font-medium leading-[1.02] tracking-[-.02em]">A day of the fast, screen by screen.</h2>
+                    <p class="wt-soft mt-6 max-w-[40ch] text-[1.05rem] leading-relaxed">
+                        <span class="motion-copy">Keep scrolling — the screens move with you.</span>
+                        <span class="static-copy hidden">Swipe, or use the arrows below, to see all five screens.</span>
+                    </p>
+                </div>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Today">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="wt-shake"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/nuru.jpg" alt="NURU Today screen: Digital Fasting, day 2 of a 14-day challenge, 12 days left, ends September 9" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">01 · Today</p>
+                            <h3 class="mt-3 text-xl font-medium leading-tight lg:text-2xl">Morning. Day 2 of 14.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Where you are in the fast at a glance: the day, the days left, the date you finish. Seven days to ninety, or your own length.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Insights">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="wt-shake"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/nuru-insights.jpg" alt="NURU Insights screen: 1 day streak, total days, longest streak, stayed strong, total breaks, and this week" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">02 · Insights</p>
+                            <h3 class="mt-3 text-xl font-medium leading-tight lg:text-2xl">Every day you hold, counts.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Your streak, your longest run, the days you stayed strong and the breaks you took, laid out week by week.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel wt-block w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Block Screen">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="wt-shake">
+                            <div class="shield-rings" aria-hidden="true"><span></span><span></span><span></span></div>
+                            <div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                                <img src="../../assets/screens/nuru-block.jpg" alt="NURU block screen: Digital Fasting is Active, with a 1 day streak, 13 days left and 4 hours a day protected" decoding="async"><div class="iphone__island"></div>
+                            </div></div></div>
+                            <div class="shield-banner" role="presentation">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><rect x="9" y="10.5" width="6" height="5" rx="1"/><path d="M10.5 10.5V9a1.5 1.5 0 0 1 3 0v1.5"/></svg>
+                                <div class="text-left">
+                                    <p class="font-mono text-[.58rem] uppercase tracking-[.16em] text-accent">Shield active</p>
+                                    <p class="text-[.82rem] leading-snug text-[#ece6dc]">Social media is blocked until your 7:00&nbsp;PM break.</p>
+                                </div>
+                            </div>
+                        </div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">03 · Block Screen</p>
+                            <h3 class="mt-3 text-xl font-medium leading-tight lg:text-2xl">Reach for a blocked app, and NURU answers.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">A system-level shield — but not a wall. It reminds you why you started: the streak you're holding, the days left, the hours protected.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Circles">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="wt-shake"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/nuru-circles.jpg" alt="NURU Fasting Circles screen: create a circle, join by code, and browse public tribes" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">04 · Circles <span class="wt-soft">— Premium</span></p>
+                            <h3 class="mt-3 text-xl font-medium leading-tight lg:text-2xl">Fast together.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Create a circle or join one by code. Everyone shares one daily break window, shown in their own timezone.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Mindful Unlock">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="wt-shake"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/nuru-unlock.jpg" alt="NURU Mindful Unlock screen: a 4:59 timer and a gratitude prompt, with a button to return to what matters" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">05 · Mindful Unlock</p>
+                            <h3 class="mt-3 text-xl font-medium leading-tight lg:text-2xl">If you must, pause first.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">A short timer and a question worth sitting with, instead of an instant override. Try it below.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Trailing room so the last screen can reach the centre:
+                     half the viewport, minus half a panel, minus the padding. -->
+                <div class="w-[3vw] flex-none sm:w-[14vw] lg:w-[21vw]" aria-hidden="true"></div>
+            </div>
+
+            <!-- Progress: which screen is centred, and how far along the day -->
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 px-[6vw] pb-7">
+                <div class="flex items-center justify-between gap-6 font-mono text-[.62rem] uppercase tracking-[.16em]">
+                    <p class="wt-soft whitespace-nowrap"><span id="wt-index" class="text-accent">00</span> / 05 · <span id="wt-name">A closer look</span></p>
+                    <div class="flex items-center gap-4">
+                        <!-- Shown only on the static strip, where there's no
+                             scroll-driven motion to move the screens. -->
+                        <div class="wt-arrows pointer-events-auto hidden gap-2">
+                            <button type="button" class="wt-arrow" data-dir="-1" aria-label="Previous screen">&larr;</button>
+                            <button type="button" class="wt-arrow" data-dir="1" aria-label="Next screen">&rarr;</button>
+                        </div>
+                        <div class="wt-bars flex w-[26vw] max-w-[360px] gap-1.5 sm:w-[42vw]" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================== 03 MINDFUL UNLOCK =========================== -->
+        <section id="try" class="mx-auto grid max-w-[1320px] items-center gap-14 px-5 py-28 sm:px-8 lg:grid-cols-12 lg:gap-10 lg:px-12 lg:py-36" aria-labelledby="try-title">
+            <div class="lg:col-span-6">
+                <p class="mb-6 font-mono text-[.68rem] uppercase tracking-[.18em] text-accent-text">03 — Try it</p>
+                <h2 id="try-title" class="text-[clamp(2.2rem,4.4vw,3.8rem)] font-medium leading-[1.02] tracking-[-.02em]">The pause is the point.</h2>
+                <p class="mt-6 max-w-[48ch] text-[1.05rem] leading-relaxed text-ink-soft">
+                    Every early unlock goes through the same loop. Hover or tap a blocked app to walk through it.
+                </p>
+
+                <ol class="mt-10 grid gap-0 border-t" style="border-color: var(--line)" aria-label="The Mindful Unlock loop">
+                    <li class="loop-step is-on flex gap-5 border-b py-4" style="border-bottom-color: var(--line)" data-loop="0">
+                        <span class="loop-num font-mono text-xs">01</span>
+                        <span><strong class="font-medium">Reach.</strong> <span class="text-ink-soft">You open an app you're fasting from, out of habit.</span></span>
+                    </li>
+                    <li class="loop-step flex gap-5 border-b py-4" style="border-bottom-color: var(--line)" data-loop="1">
+                        <span class="loop-num font-mono text-xs">02</span>
+                        <span><strong class="font-medium">Pause.</strong> <span class="text-ink-soft">NURU holds it closed behind a short timer.</span></span>
+                    </li>
+                    <li class="loop-step flex gap-5 border-b py-4" style="border-bottom-color: var(--line)" data-loop="2">
+                        <span class="loop-num font-mono text-xs">03</span>
+                        <span><strong class="font-medium">Reflect.</strong> <span class="text-ink-soft">A question to sit with while you wait.</span></span>
+                    </li>
+                    <li class="loop-step flex gap-5 border-b py-4" style="border-bottom-color: var(--line)" data-loop="3">
+                        <span class="loop-num font-mono text-xs">04</span>
+                        <span><strong class="font-medium">Return.</strong> <span class="text-ink-soft">Most of the time, you go back to what matters.</span></span>
+                    </li>
+                </ol>
+                <p class="mt-6 font-mono text-[.62rem] uppercase tracking-[.14em] text-ink-soft">In the app the pause lasts five minutes. This demo runs for twelve seconds.</p>
+            </div>
+
+            <div class="flex justify-center lg:col-span-6">
+                <div class="unlock w-full max-w-[360px]" data-state="idle">
+                    <div class="unlock-screen">
+
+                        <div class="u-view u-idle">
+                            <p class="font-mono text-[.6rem] uppercase tracking-[.16em] text-[#e0904f]">Day 2 of 14 · Fast active</p>
+                            <p class="mt-3 text-xl font-light">Your fast is on.</p>
+                            <div class="mt-9 grid w-full grid-cols-3 gap-3">
+                                <button type="button" class="u-app" data-app="Social media" aria-label="Open Social media, blocked">
+                                    <svg class="u-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                                    <svg class="u-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.2A8 8 0 1 1 20 12z"/></svg>
+                                    <span class="font-mono text-[.55rem] uppercase tracking-[.12em] opacity-75">Social</span>
+                                </button>
+                                <button type="button" class="u-app" data-app="Video" aria-label="Open Video, blocked">
+                                    <svg class="u-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                                    <svg class="u-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4.5-2.5z"/></svg>
+                                    <span class="font-mono text-[.55rem] uppercase tracking-[.12em] opacity-75">Video</span>
+                                </button>
+                                <button type="button" class="u-app" data-app="News" aria-label="Open News, blocked">
+                                    <svg class="u-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                                    <svg class="u-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v8a2 2 0 0 1-2 2"/><path d="M7.5 9h6M7.5 12.5h6M7.5 16h4"/></svg>
+                                    <span class="font-mono text-[.55rem] uppercase tracking-[.12em] opacity-75">News</span>
+                                </button>
+                            </div>
+                            <p class="mt-8 text-sm text-[#97a1a6]">Hover or tap a blocked app.</p>
+                        </div>
+
+                        <div class="u-view u-count">
+                            <p class="font-mono text-[.6rem] uppercase tracking-[.16em] text-[#97a1a6]"><span id="u-app">Social media</span> is shielded</p>
+                            <div class="relative mt-7 grid place-items-center">
+                                <svg class="u-ring" viewBox="0 0 100 100" aria-hidden="true">
+                                    <circle class="u-track" cx="50" cy="50" r="46"/>
+                                    <circle class="u-fg" cx="50" cy="50" r="46"/>
+                                </svg>
+                                <p id="u-time" class="absolute font-mono text-4xl tracking-tight">0:12</p>
+                            </div>
+                            <p class="mt-7 text-lg font-light">Take a breath first.</p>
+                            <button type="button" class="u-return mt-auto" data-return>Return to what matters</button>
+                        </div>
+
+                        <div class="u-view u-prompt">
+                            <p class="text-3xl" aria-hidden="true">🙏</p>
+                            <p id="u-prompt" class="mt-5 text-[1.15rem] font-light leading-snug">Before you unlock, name one person who believed in you when you didn't.</p>
+                            <p class="mt-4 font-mono text-[.58rem] uppercase tracking-[.2em] text-[#97a1a6]">Gratitude</p>
+                            <button type="button" class="u-return mt-auto" data-return>Return to what matters</button>
+                        </div>
+
+                        <div class="u-view u-back">
+                            <p class="font-mark text-3xl uppercase tracking-[.2em]">Nuru</p>
+                            <p class="mt-5 text-xl font-light">Welcome back.</p>
+                            <p class="mt-2 text-sm text-[#97a1a6]">That can wait. Your streak holds.</p>
+                        </div>
+                    </div>
+                    <p class="sr-only" aria-live="polite" id="u-live"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================== CTA =========================== -->
+        <section class="border-t" style="border-color: var(--line)">
+            <div class="mx-auto flex max-w-[1320px] flex-col items-start justify-between gap-8 px-5 py-24 sm:px-8 lg:flex-row lg:items-end lg:px-12">
+                <div>
+                    <h2 class="text-[clamp(2.2rem,5vw,4.2rem)] font-medium leading-[1] tracking-[-.02em]">Start your first fast.</h2>
+                    <p class="mt-5 max-w-[52ch] text-ink-soft">Free to download on iPhone and iPad. Circles Premium is an optional subscription with a 7-day free trial.</p>
+                </div>
+                <a href="https://apps.apple.com/us/app/nuru-digital-fasting/id6767774485" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                    Get NURU
                 </a>
             </div>
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="wrap">
-            <span class="mono">&copy; 2026 Fueera LLC</span>
-            <nav class="footer-links mono">
-                <a href="../../">All apps</a>
-                <a href="mailto:support@fueera.com">Support</a>
-                <a href="../../privacy-policy/">Privacy</a>
+    <footer class="border-t" style="border-color: var(--line)">
+        <div class="mx-auto flex max-w-[1320px] flex-wrap items-baseline justify-between gap-6 px-5 py-10 font-mono text-[.64rem] uppercase tracking-[.14em] sm:px-8 lg:px-12">
+            <span class="text-ink-soft">&copy; 2026 Fueera LLC</span>
+            <nav class="flex flex-wrap gap-x-8 gap-y-3" aria-label="Footer">
+                <a href="../../" class="hover:underline">All apps</a>
+                <a href="mailto:support@fueera.com" class="hover:underline">Support</a>
+                <a href="../../privacy-policy/" class="hover:underline">Privacy Policy</a>
             </nav>
         </div>
     </footer>
 
-    <script src="../../assets/js/motion.js?v=2" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* ==================================================================
+           01 — Protected-time ring
+           A conic-gradient arc sweeps slowly around a ring of minute ticks,
+           with the NURU sunburst drawn procedurally at the centre. The arc's
+           head leans toward the pointer (lerp-damped) when it's near. Only
+           animates while the hero is on screen.
+           ================================================================== */
+        (function ring() {
+            var canvas = document.getElementById('ring');
+            var ctx = canvas.getContext('2d');
+            var ACCENT = [224, 144, 79];
+            var TAU = Math.PI * 2;
+            var SWEEP = TAU * 0.74;          // the protected share of the ring
+            var PERIOD = 48;                 // seconds per revolution
+            var w = 0, h = 0, cx = 0, cy = 0, R = 0;
+            var ink = [28, 35, 39];
+            var lean = 0, near = 0, nearTarget = 0, pointerAngle = 0;
+            var running = false, visible = true;
+            var t0 = performance.now();
+
+            function readInk() {
+                var v = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim();
+                var m = v.match(/^#([0-9a-f]{6})$/i);
+                if (m) ink = [0, 2, 4].map(function (i) { return parseInt(m[1].substr(i, 2), 16); });
+            }
+            function rgba(c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+            function wrap(a) { a = (a + Math.PI) % TAU; if (a < 0) a += TAU; return a - Math.PI; }
+            function norm(a) { a = a % TAU; return a < 0 ? a + TAU : a; }
+
+            function size() {
+                var dpr = Math.min(2, window.devicePixelRatio || 1);
+                var r = canvas.getBoundingClientRect();
+                w = r.width; h = r.height;
+                canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                cx = w / 2; cy = h / 2; R = Math.min(w, h) * 0.38;
+            }
+
+            function sunburst(t) {
+                var r0 = R * 0.5;
+                var ox = cx - r0 * 0.58;
+                var chord = Math.acos(-0.58);          // where the chord meets the circle
+                ctx.beginPath();
+                ctx.arc(cx, cy, r0, chord, TAU - chord);
+                ctx.closePath();
+                ctx.fillStyle = rgba(ACCENT, 0.92);
+                ctx.fill();
+
+                var n = 34, span = chord - 0.08;
+                ctx.lineWidth = Math.max(1, R * 0.011);
+                ctx.lineCap = 'round';
+                for (var i = 0; i < n; i++) {
+                    var phi = -span + (2 * span) * (i / (n - 1));
+                    var ex = cx + r0 * Math.cos(phi), ey = cy + r0 * Math.sin(phi);
+                    var sy = cy + (ey - cy) * 0.12;
+                    var shimmer = reduced ? 1 : 0.62 + 0.38 * (0.5 + 0.5 * Math.sin(t * 1.4 - i * 0.35));
+                    ctx.strokeStyle = rgba(ACCENT, shimmer);
+                    ctx.beginPath(); ctx.moveTo(ox, sy); ctx.lineTo(ex, ey); ctx.stroke();
+                }
+            }
+
+            function draw(now) {
+                var t = (now - t0) / 1000;
+                var base = -Math.PI / 2 + (reduced ? 0.9 : t * TAU / PERIOD);
+                var headBase = base + SWEEP;
+                near += (nearTarget - near) * 0.06;
+                var desired = near * wrap(pointerAngle - headBase) * 0.4;
+                lean += (desired - lean) * 0.06;
+                var head = headBase + lean;
+                var start = head - SWEEP;
+
+                ctx.clearRect(0, 0, w, h);
+
+                // Minute ticks: lit inside the protected arc, brighter toward its head.
+                for (var i = 0; i < 60; i++) {
+                    var ang = i / 60 * TAU;
+                    var d = norm(ang - start);
+                    var inArc = d <= SWEEP;
+                    var major = i % 5 === 0;
+                    var r1 = R * 1.12, r2 = r1 + (major ? R * 0.08 : R * 0.04);
+                    var a = inArc ? 0.18 + 0.82 * Math.pow(d / SWEEP, 1.6) : 0.12;
+                    var pointerGlow = near * Math.max(0, 1 - Math.abs(wrap(ang - pointerAngle)) / 0.5);
+                    ctx.strokeStyle = inArc ? rgba(ACCENT, Math.min(1, a + pointerGlow * 0.5)) : rgba(ink, 0.12 + pointerGlow * 0.3);
+                    ctx.lineWidth = major ? 1.6 : 1;
+                    ctx.beginPath();
+                    ctx.moveTo(cx + r1 * Math.cos(ang), cy + r1 * Math.sin(ang));
+                    ctx.lineTo(cx + r2 * Math.cos(ang), cy + r2 * Math.sin(ang));
+                    ctx.stroke();
+                }
+
+                // Track
+                ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU);
+                ctx.strokeStyle = rgba(ink, 0.09); ctx.lineWidth = R * 0.02; ctx.stroke();
+
+                // Protected arc: transparent tail to a solid head.
+                var grad;
+                if (ctx.createConicGradient) {
+                    grad = ctx.createConicGradient(start, cx, cy);
+                    grad.addColorStop(0, rgba(ACCENT, 0));
+                    grad.addColorStop(SWEEP / TAU, rgba(ACCENT, 1));
+                    grad.addColorStop(Math.min(1, SWEEP / TAU + 0.0001), rgba(ACCENT, 0));
+                } else {
+                    grad = rgba(ACCENT, 0.9);
+                }
+                ctx.beginPath(); ctx.arc(cx, cy, R, start, head);
+                ctx.strokeStyle = grad; ctx.lineWidth = R * 0.05; ctx.lineCap = 'round'; ctx.stroke();
+
+                // Head
+                var hx = cx + R * Math.cos(head), hy = cy + R * Math.sin(head);
+                ctx.save();
+                ctx.shadowColor = rgba(ACCENT, 0.9); ctx.shadowBlur = 22 + near * 18;
+                ctx.beginPath(); ctx.arc(hx, hy, R * (0.045 + near * 0.015), 0, TAU);
+                ctx.fillStyle = rgba(ACCENT, 1); ctx.fill();
+                ctx.restore();
+
+                sunburst(t);
+
+                if (running) requestAnimationFrame(draw);
+            }
+
+            function setRunning(on) {
+                var was = running;
+                running = on && !reduced;
+                if (running && !was) requestAnimationFrame(draw);
+            }
+
+            readInk(); size();
+            draw(performance.now());
+
+            window.addEventListener('resize', function () { size(); if (!running) draw(performance.now()); });
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { readInk(); if (!running) draw(performance.now()); });
+
+            if (!reduced) {
+                var hero = canvas.closest('section');
+                hero.addEventListener('pointermove', function (e) {
+                    var r = canvas.getBoundingClientRect();
+                    var dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+                    pointerAngle = Math.atan2(dy, dx);
+                    nearTarget = Math.hypot(dx, dy) < r.width * 0.75 ? 1 : 0;
+                });
+                hero.addEventListener('pointerleave', function () { nearTarget = 0; });
+                new IntersectionObserver(function (entries) {
+                    visible = entries[0].isIntersecting;
+                    setRunning(visible);
+                }).observe(canvas);
+            }
+        })();
+
+        /* ==================================================================
+           03 — Mindful Unlock
+           idle → counting (12 s ring) → prompt → back → idle. Hover or tap a
+           blocked app to start; "Return to what matters" exits at any point.
+           ================================================================== */
+        (function unlock() {
+            var root = document.querySelector('.unlock');
+            var ringFg = root.querySelector('.u-fg');
+            var timeEl = document.getElementById('u-time');
+            var appEl = document.getElementById('u-app');
+            var promptEl = document.getElementById('u-prompt');
+            var live = document.getElementById('u-live');
+            var steps = Array.prototype.slice.call(document.querySelectorAll('[data-loop]'));
+            var DURATION = 12;
+            var C = 2 * Math.PI * 46;
+            var PROMPTS = [
+                "Before you unlock, name one person who believed in you when you didn't.",
+                "Name one thing you can see right now that you're grateful for.",
+                "What will you do with the time you just protected?"
+            ];
+            var state = 'idle', raf = 0, started = 0, promptIndex = 0, backTimer = 0, hoverTimer = 0, shown = '';
+            var LOOP = { idle: 0, counting: 1, prompt: 2, back: 3 };
+            var SAY = {
+                idle: 'Your fast is on. Blocked apps are shielded.',
+                counting: 'Pausing for twelve seconds before unlock.',
+                prompt: 'Gratitude prompt.',
+                back: 'Welcome back. Your streak holds.'
+            };
+
+            ringFg.style.strokeDasharray = C.toFixed(2);
+            ringFg.style.strokeDashoffset = '0';
+
+            function set(s) {
+                state = s;
+                root.dataset.state = s;
+                steps.forEach(function (el, i) { el.classList.toggle('is-on', i === LOOP[s]); });
+                live.textContent = s === 'prompt' ? promptEl.textContent : SAY[s];
+            }
+
+            function tick() {
+                var elapsed = (performance.now() - started) / 1000;
+                var left = Math.max(0, DURATION - elapsed);
+                ringFg.style.strokeDashoffset = (C * Math.min(1, elapsed / DURATION)).toFixed(2);
+                var label = '0:' + String(Math.ceil(left)).padStart(2, '0');
+                if (label !== shown) timeEl.textContent = shown = label;   // once a second, not every frame
+                if (left <= 0) {
+                    promptEl.textContent = PROMPTS[promptIndex++ % PROMPTS.length];
+                    set('prompt');
+                    return;
+                }
+                raf = requestAnimationFrame(tick);
+            }
+
+            function start(app) {
+                if (state !== 'idle') return;
+                appEl.textContent = app;
+                ringFg.style.strokeDashoffset = '0';
+                timeEl.textContent = shown = '0:' + DURATION;
+                started = performance.now();
+                set('counting');
+                raf = requestAnimationFrame(tick);
+            }
+
+            function giveBack() {
+                cancelAnimationFrame(raf);
+                set('back');
+                clearTimeout(backTimer);
+                backTimer = setTimeout(function () { set('idle'); }, 2600);
+            }
+
+            // Hover needs a brief dwell, so a cursor passing over the apps on
+            // its way elsewhere doesn't lock the widget into a countdown.
+            root.querySelectorAll('.u-app').forEach(function (btn) {
+                btn.addEventListener('click', function () { clearTimeout(hoverTimer); start(btn.dataset.app); });
+                btn.addEventListener('pointerenter', function (e) {
+                    if (e.pointerType !== 'mouse') return;
+                    clearTimeout(hoverTimer);
+                    hoverTimer = setTimeout(function () { start(btn.dataset.app); }, 280);
+                });
+                btn.addEventListener('pointerleave', function () { clearTimeout(hoverTimer); });
+            });
+            root.querySelectorAll('[data-return]').forEach(function (b) { b.addEventListener('click', giveBack); });
+        })();
+
+        /* ==================================================================
+           02 — Walkthrough: pinned horizontal track
+           ================================================================== */
+        if (!window.gsap || !window.ScrollTrigger) return;    // strip stays swipeable
+        gsap.registerPlugin(ScrollTrigger);
+        // Phone address bars grow and shrink mid-scroll; re-measuring on
+        // each of those resizes would make the pinned track jump.
+        ScrollTrigger.config({ ignoreMobileResize: true });
+
+        var section = document.getElementById('walkthrough');
+        var track = section.querySelector('.wt-track');
+        var panels = Array.prototype.slice.call(section.querySelectorAll('.wt-panel'));
+        var bars = Array.prototype.slice.call(section.querySelectorAll('.wt-bars span'));
+        var idxEl = document.getElementById('wt-index');
+        var nameEl = document.getElementById('wt-name');
+        var blockPanel = section.querySelector('.wt-block');
+
+        function setStep(i) {
+            bars.forEach(function (b, k) { b.classList.toggle('is-on', k <= i); });
+            idxEl.textContent = i < 0 ? '00' : '0' + (i + 1);
+            nameEl.textContent = i < 0 ? 'A closer look' : panels[i].dataset.name;
+        }
+
+        var mm = gsap.matchMedia();
+
+        mm.add('(prefers-reduced-motion: no-preference)', function () {
+            section.classList.add('is-pinned');
+            // Travel until the last screen sits dead centre. Measured from
+            // layout offsets: scrollWidth on a transformed, overflow-visible
+            // flex track under-reports its real extent.
+            var lastPanel = panels[panels.length - 1];
+            var distance = function () {
+                return lastPanel.offsetLeft + lastPanel.offsetWidth / 2 - section.clientWidth / 2;
+            };
+            var gap = function () { return parseFloat(getComputedStyle(track).columnGap) || 0; };
+
+            var slide = gsap.to(track, {
+                x: function () { return -distance(); },
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top top',
+                    end: function () { return '+=' + distance(); },
+                    pin: true,
+                    scrub: 0.8,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true
+                }
+            });
+
+            // Cascade: each phone swings in from the right, settles flat at
+            // the centre, and swings away as the next one arrives.
+            panels.forEach(function (panel, i) {
+                var phone = panel.querySelector('.wt-phone');
+                gsap.timeline({
+                    scrollTrigger: { trigger: panel, containerAnimation: slide, start: 'left right', end: 'right left', scrub: true }
+                })
+                    .fromTo(phone, { rotateY: -34, rotateX: 6, scale: 0.84, opacity: 0.3, y: 40 },
+                        { rotateY: 0, rotateX: 0, scale: 1, opacity: 1, y: 0, ease: 'power2.out', duration: 0.5 })
+                    .to(phone, { rotateY: 26, scale: 0.9, opacity: 0.4, y: -12, ease: 'power2.in', duration: 0.5 });
+
+                // Active range runs across the gap to the next panel, so some
+                // screen is always the current step while the track moves.
+                ScrollTrigger.create({
+                    trigger: panel, containerAnimation: slide,
+                    start: 'left center',
+                    end: function () { return 'right+=' + gap() + ' center'; },
+                    onToggle: function (self) { if (self.isActive) setStep(i); }
+                });
+            });
+
+            ScrollTrigger.create({
+                trigger: panels[0], containerAnimation: slide,
+                start: 'left center',
+                onLeaveBack: function () { setStep(-1); }
+            });
+
+            // The shield: while the Block Screen crosses the middle of the
+            // viewport, everything else dims and the shield takes hold.
+            ScrollTrigger.create({
+                trigger: blockPanel, containerAnimation: slide,
+                start: 'center 72%', end: 'center 28%',
+                onToggle: function (self) { track.classList.toggle('is-alert', self.isActive); }
+            });
+
+            return function () {
+                section.classList.remove('is-pinned');
+                track.classList.remove('is-alert');
+                gsap.set(track, { clearProps: 'transform' });
+            };
+        });
+
+        mm.add('(prefers-reduced-motion: reduce)', function () {
+            // No pin: a swipeable strip, with the shield shown at rest.
+            // Arrows move it for mouse and keyboard users (its scrollbar is
+            // hidden), and the progress row follows whichever screen is
+            // nearest the middle.
+            var arrows = section.querySelector('.wt-arrows');
+            var prev = arrows.querySelector('[data-dir="-1"]');
+            var next = arrows.querySelector('[data-dir="1"]');
+            var stops = [section.querySelector('.wt-intro')].concat(panels);   // intro = step -1
+            var current = -1;
+
+            section.classList.add('is-static');
+            section.querySelector('.motion-copy').classList.add('hidden');
+            section.querySelector('.static-copy').classList.remove('hidden');
+            section.style.height = 'auto';
+            section.style.paddingBlock = '2.5rem';
+            blockPanel.querySelector('.shield-banner').style.cssText = 'opacity:1;transform:none';
+            arrows.classList.replace('hidden', 'flex');
+            track.setAttribute('role', 'region');
+            track.setAttribute('aria-label', 'NURU screens');
+            track.tabIndex = 0;                                   // arrow keys scroll it
+
+            function nearest() {
+                var t = track.getBoundingClientRect(), mid = t.left + t.width / 2;
+                var best = 0, bestD = Infinity;
+                stops.forEach(function (el, k) {
+                    var r = el.getBoundingClientRect();
+                    var d = Math.abs(r.left + r.width / 2 - mid);
+                    if (d < bestD) { bestD = d; best = k; }
+                });
+                return best;
+            }
+            function onScroll() {
+                current = nearest();
+                setStep(current - 1);
+                // By position, not index: at rest the strip already shows
+                // the intro and the first screen, with nowhere left to go.
+                prev.disabled = current === 0 || track.scrollLeft <= 1;
+                next.disabled = current === stops.length - 1 || track.scrollLeft >= track.scrollWidth - track.clientWidth - 1;
+            }
+            function go(e) {
+                var k = Math.max(0, Math.min(stops.length - 1, current + Number(e.currentTarget.dataset.dir)));
+                var t = track.getBoundingClientRect(), r = stops[k].getBoundingClientRect();
+                track.scrollBy({ left: r.left + r.width / 2 - (t.left + t.width / 2) });
+            }
+            track.addEventListener('scroll', onScroll, { passive: true });
+            prev.addEventListener('click', go);
+            next.addEventListener('click', go);
+            onScroll();
+
+            return function () {
+                track.removeEventListener('scroll', onScroll);
+                prev.removeEventListener('click', go);
+                next.removeEventListener('click', go);
+                arrows.classList.replace('flex', 'hidden');
+                section.classList.remove('is-static');
+                track.removeAttribute('role');
+                track.removeAttribute('aria-label');
+                track.removeAttribute('tabindex');
+                section.querySelector('.motion-copy').classList.remove('hidden');
+                section.querySelector('.static-copy').classList.add('hidden');
+                section.style.height = '';
+                section.style.paddingBlock = '';
+                blockPanel.querySelector('.shield-banner').style.cssText = '';
+            };
+        });
+
+        // "See a day of it": glide to where the walkthrough pins. The
+        // section's own box is unreliable once pinned, so aim at the
+        // trigger's start when there is one.
+        document.querySelector('a[href="#walkthrough"]').addEventListener('click', function (e) {
+            e.preventDefault();
+            var st = ScrollTrigger.getAll().filter(function (t) { return t.pin === section; })[0];
+            var top = st ? st.start : section.getBoundingClientRect().top + window.scrollY;
+            var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({ top: top, behavior: still ? 'auto' : 'smooth' });
+            history.replaceState(null, '', '#walkthrough');
+        });
+
+        // Decode the walkthrough screens ahead of time, so none of them is
+        // decoded for the first time mid-scroll.
+        section.querySelectorAll('img').forEach(function (img) {
+            if (img.decode) img.decode().catch(function () {});
+        });
+
+        // Tailwind's CDN build and the web fonts both change layout after
+        // first paint; re-measure the pinned distance once they settle.
+        window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    })();
+    </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EOTC Calendar — Fueera LLC</title>
-    <meta name="description" content="A digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. Fasts, feasts, daily saints, monthly commemorations, a church finder, widgets, and Digital Fasting to block distractions during fasting periods.">
+    <meta name="description" content="The calendar of the Ethiopian Orthodox Tewahedo Church for iPhone, iPad, Apple Watch and Mac: every fast, feast and saint's day in English and Amharic, Lock Screen widgets, a church finder, and Digital Fasting.">
     <link rel="canonical" href="https://apps.fueera.com/apps/eotc-calendar/">
     <link rel="icon" href="../../assets/icons/eotc-calendar-icon.png">
     <meta property="og:title" content="EOTC Calendar">
@@ -12,164 +12,1136 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://apps.fueera.com/apps/eotc-calendar/">
     <meta property="og:image" content="https://apps.fueera.com/assets/screenshots/eotc-calendar/today.jpg">
+    <meta property="og:site_name" content="Fueera LLC">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2eee2">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#222222">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111c21">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Noto+Sans+Ethiopic:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/site.css?v=2">
-    <script>document.documentElement.classList.add('js');</script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&family=Noto+Serif+Ethiopic:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Open Sans"', '"Noto Serif Ethiopic"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        ethi: ['"Noto Serif Ethiopic"', '"Open Sans"', 'serif'],
+                        mono: ['"Space Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        paper: 'var(--paper)',
+                        ink: 'var(--ink)',
+                        'ink-soft': 'var(--ink-soft)',
+                        accent: 'var(--accent)',
+                        'accent-text': 'var(--accent-text)',
+                        gold: 'var(--gold)',
+                    },
+                },
+            },
+        };
+    </script>
+
     <style>
+        /* ------------------------------------------------------------------
+           Tokens. The page follows the viewer's theme; the walkthrough and
+           the Lock Screen stay dark in both, because they present the app's
+           own slate interface. The Amharic face is Noto Serif Ethiopic, the
+           nearest web font to the app's Ethiopic LeTewahedo.
+           ------------------------------------------------------------------ */
         :root {
-            --font-display: "Open Sans", "Noto Sans Ethiopic", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            --display-tracking: -0.03em;
-            --display-weight: 800;
+            color-scheme: light dark;
+            --paper: #f2eee2;
+            --ink: #1e2d34;
+            --ink-soft: #56666d;
+            --line: rgba(30, 45, 52, .14);
             --accent: #e2913f;
-            --accent-ink: #1e2d34;
-            --brand-bg: #3b535f;
+            --accent-text: #9a5218;
+            --gold: #b8823e;
+            --stage: #172830;
+            --stage-ink: #ece6dc;
+            --stage-soft: #9aa9ae;
+            --stage-line: rgba(236, 230, 220, .12);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #111c21;
+                --ink: #ece6dc;
+                --ink-soft: #9aa9ae;
+                --line: rgba(236, 230, 220, .12);
+                --accent-text: #eea85f;
+                --gold: #d9b27a;
+            }
+        }
+
+        /* No CSS smooth scrolling: ScrollTrigger sets the scroll position
+           itself when it re-measures, and would animate those jumps. The
+           in-page link scrolls smoothly from script instead. */
+        body { background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+        h1, h2, h3 { text-wrap: balance; }
+        ::selection { background: var(--accent); color: #10191f; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+        .site-nav {
+            background: color-mix(in srgb, var(--paper) 84%, transparent);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: .6rem;
+            padding: .95rem 1.4rem;
+            font-family: "Space Mono", ui-monospace, monospace;
+            font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+            border: 1.5px solid transparent;
+            transition: transform .25s, background-color .25s, color .25s, border-color .25s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--accent); color: #10191f; }
+        .btn-ghost { border-color: color-mix(in srgb, var(--ink) 35%, transparent); color: var(--ink); }
+        .btn-ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+        .btn svg { width: 15px; height: 15px; flex: none; }
+        .chip { border: 1px solid var(--line); padding: .45rem .8rem; }
+
+        /* The flag's three colours, as a hairline. */
+        .tricolour { height: 3px; background: linear-gradient(90deg, #078930 0 33.3%, #fcdd09 33.3% 66.6%, #da121a 66.6%); }
+
+        /* ---------------- Hero: the church-year ring ---------------- */
+        .ring-wrap {
+            --ring: min(460px, 86vw);
+            position: relative; width: var(--ring); aspect-ratio: 1;
+            border-radius: 50%;
+            cursor: crosshair;
+        }
+        .ring-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .ring-centre {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; pointer-events: none;
+            padding: 0 calc(var(--ring) * .24);
+        }
+        .rc-kicker { font-family: "Space Mono", monospace; font-size: max(9px, calc(var(--ring) * .021)); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+        .rc-am { font-family: "Noto Serif Ethiopic", serif; font-weight: 700; font-size: calc(var(--ring) * .062); line-height: 1.25; margin-top: .35em; white-space: nowrap; }
+        .rc-en { font-weight: 800; font-size: calc(var(--ring) * .034); letter-spacing: .04em; text-transform: uppercase; color: var(--accent-text); white-space: nowrap; }
+        .rc-greg { font-size: calc(var(--ring) * .028); color: var(--ink-soft); margin-top: .2em; white-space: nowrap; }
+        .rc-status { margin-top: .9em; font-size: calc(var(--ring) * .03); font-weight: 700; line-height: 1.25; }
+        .rc-status.is-feast { color: var(--gold); }
+        .rc-status.is-fast { color: var(--accent-text); }
+        .rc-status.is-none { color: var(--ink-soft); font-weight: 600; }
+        .rc-note { font-size: calc(var(--ring) * .025); color: var(--ink-soft); line-height: 1.3; }
+        .legend-dot { display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; vertical-align: middle; }
+        .legend-bar { display: inline-block; width: 1rem; height: .3rem; border-radius: 99px; vertical-align: middle; background: var(--accent); }
+
+        /* ---------------- iPhone (shared with the other pages) ---------------- */
+        .iphone {
+            --w: 260px;
+            position: relative;
+            width: var(--w); height: calc(var(--w) * 2.1);
+            border-radius: calc(var(--w) * .165);
+            background: linear-gradient(145deg, #57544f 0%, #1f1e1c 36%, #2d2b29 64%, #5d5a55 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, .22),
+                inset 0 0 0 calc(var(--w) * .007) #0c0c0c,
+                0 calc(var(--w) * .1) calc(var(--w) * .22) calc(var(--w) * -.06) rgba(0, 0, 0, .6);
+            transition: box-shadow .5s;
+        }
+        .iphone__bezel { position: absolute; inset: calc(var(--w) * .014); border-radius: calc(var(--w) * .152); background: #050505; padding: calc(var(--w) * .026); }
+        .iphone__screen { position: relative; width: 100%; height: 100%; border-radius: calc(var(--w) * .128); overflow: hidden; background: #000; isolation: isolate; }
+        .iphone__screen > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+        .iphone__island { position: absolute; z-index: 5; top: calc(var(--w) * .024); left: 50%; width: calc(var(--w) * .29); height: calc(var(--w) * .08); transform: translateX(-50%); background: #000; border-radius: 999px; }
+
+        /* The Today screen in both languages, stacked. */
+        .screen-am { opacity: 0; transition: opacity .45s ease; }
+        .wt-today.is-am .screen-am { opacity: 1; }
+        .lang-pill { display: inline-flex; border: 1px solid var(--stage-line); border-radius: 99px; padding: 3px; gap: 2px; }
+        .lang-pill span { padding: .2rem .6rem; border-radius: 99px; transition: background-color .35s, color .35s; }
+        .wt-today:not(.is-am) .lang-pill .l-en,
+        .wt-today.is-am .lang-pill .l-am { background: var(--accent); color: #10191f; }
+
+        /* ---------------- Walkthrough ----------------
+           Without GSAP (or with reduced motion) the track is a native
+           swipeable strip. Once pinning is live, .is-pinned hides overflow
+           and scroll drives the track instead. */
+        .walkthrough { background: var(--stage); color: var(--stage-ink); }
+        .wt-track {
+            display: flex; align-items: center;
+            overflow-x: auto; scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+        .wt-track::-webkit-scrollbar { display: none; }
+        .walkthrough.is-pinned .wt-track { overflow: visible; scroll-snap-type: none; will-change: transform; }
+        .wt-panel, .wt-intro { flex: 0 0 auto; scroll-snap-align: center; }
+        .wt-panel { perspective: 1400px; transition: opacity .5s, filter .5s; }
+        /* Phone width from the height left over. Stacked (phones, tablets):
+           nav 64 + progress row 56 + gap 24 + the longest caption ~180
+           + breathing room. Side by side (desktop): only the phone's own
+           height has to fit between the nav and the progress row. */
+        .wt-panel { --pw: min(250px, calc((100svh - 345px) / 2.1)); }
+        @media (min-width: 1024px) {
+            .wt-panel { --pw: min(250px, calc((100svh - 230px) / 2.1)); }
+        }
+        /* Phones held sideways: too short to stack, so sit the caption
+           beside the phone as on desktop. */
+        @media (orientation: landscape) and (max-height: 540px) and (max-width: 1023px) {
+            .wt-panel { --pw: calc((100svh - 150px) / 2.1); }
+            .wt-panel > div { flex-direction: row; align-items: center; }
+        }
+        .wt-panel .iphone { --w: var(--pw); }
+        .wt-phone { position: relative; transform-style: preserve-3d; will-change: transform, opacity; }
+        .wt-soft { color: var(--stage-soft); }
+
+        /* Digital Fasting: while it crosses the middle, a warm halo rises
+           behind the phone and the rest of the day dims. */
+        .halo {
+            position: absolute; left: 50%; top: 46%;
+            width: calc(var(--pw, 250px) * 2.3); aspect-ratio: 1;
+            transform: translate(-50%, -50%) scale(.7);
+            background: radial-gradient(closest-side, rgba(226, 145, 63, .42), rgba(226, 145, 63, .12) 55%, transparent 72%);
+            opacity: 0; pointer-events: none;
+            transition: opacity .7s ease, transform 1.2s cubic-bezier(.16, 1, .3, 1);
+        }
+        .wt-track.is-glow .halo { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: halo-breathe 3.6s ease-in-out .8s infinite; }
+        @keyframes halo-breathe { 50% { transform: translate(-50%, -50%) scale(1.06); opacity: .8; } }
+        .wt-track.is-glow .wt-panel:not(.wt-glow) { opacity: .35; }
+        .wt-track.is-glow .wt-glow .iphone {
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, .22),
+                0 0 0 1.5px rgba(226, 145, 63, .55),
+                0 30px 60px -20px rgba(0, 0, 0, .7);
+        }
+
+        .wt-arrow {
+            display: grid; place-items: center;
+            width: 2.4rem; height: 2.4rem;
+            border: 1px solid var(--stage-line); border-radius: 999px;
+            color: var(--stage-ink); font-size: .95rem;
+            transition: border-color .25s, color .25s, opacity .25s;
+        }
+        .wt-arrow:hover { border-color: var(--accent); color: var(--accent); }
+        .wt-arrow:disabled { opacity: .3; pointer-events: none; }
+        /* Narrow static strip: the arrows need the room, and the label
+           already says which screen this is. */
+        @media (max-width: 639px) { .walkthrough.is-static .wt-bars { display: none; } }
+        .wt-bars span { height: 3px; flex: 1; background: var(--stage-line); transition: background-color .35s; }
+        .wt-bars span.is-on { background: var(--accent); }
+
+        /* ---------------- Lock Screen widget ---------------- */
+        .lock-screen {
+            position: relative;
+            width: 100%; aspect-ratio: 9 / 19.5;
+            border-radius: 46px;
+            overflow: hidden;
+            color: #fff;
+            background:
+                radial-gradient(90% 55% at 25% 12%, rgba(226, 145, 63, .28), transparent 70%),
+                radial-gradient(120% 70% at 70% 100%, #0b151a, transparent 70%),
+                linear-gradient(170deg, #36505c 0%, #1d313a 48%, #101c22 100%);
+            box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .55), inset 0 0 0 7px #050505, inset 0 0 0 8px rgba(255, 255, 255, .08);
+        }
+        .lock-island { position: absolute; top: 3.2%; left: 50%; width: 30%; height: 3.6%; transform: translateX(-50%); background: #000; border-radius: 99px; }
+        .lock-date { position: absolute; top: 12%; inset-inline: 0; text-align: center; font-weight: 600; font-size: clamp(.8rem, 4.4cqw, 1rem); opacity: .9; }
+        .lock-time { position: absolute; top: 14.5%; inset-inline: 0; text-align: center; font-weight: 700; font-size: 25cqw; line-height: 1.1; letter-spacing: -.02em; opacity: .95; }
+        .lock-widget {
+            position: absolute; top: 36%; left: 9%; right: 9%;
+            display: flex; justify-content: space-between; gap: .5rem;
+            padding: 5.2cqw 5.4cqw;
+            border-radius: 6.5cqw;
+            background: linear-gradient(180deg, rgba(178, 196, 207, .62), rgba(118, 138, 150, .55));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 10px 30px -10px rgba(0, 0, 0, .5);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .18);
+        }
+        .lock { container-type: inline-size; }
+        .w-main { font-weight: 800; font-size: 7.2cqw; line-height: 1.1; letter-spacing: .01em; }
+        .w-main.is-ethi { font-family: "Noto Serif Ethiopic", serif; font-size: 6.6cqw; }
+        .w-sub { font-size: 4.6cqw; opacity: .78; margin-top: .25em; }
+        .w-alt { font-family: "Noto Serif Ethiopic", serif; font-weight: 600; font-size: 4.8cqw; margin-top: .15em; }
+        .w-alt.is-latin { font-family: "Open Sans", sans-serif; font-weight: 700; letter-spacing: .06em; }
+        .w-addis { font-weight: 800; font-size: 7.2cqw; line-height: 1.1; white-space: nowrap; }
+        .w-addis-label { font-size: 3.9cqw; letter-spacing: .08em; opacity: .78; margin-top: .3em; text-transform: uppercase; }
+        .w-addis-label.is-ethi { font-family: "Noto Serif Ethiopic", serif; letter-spacing: 0; text-transform: none; }
+        .lock-btns { position: absolute; bottom: 6.5%; left: 12%; right: 12%; display: flex; justify-content: space-between; }
+        .lock-btns span { width: 13cqw; aspect-ratio: 1; border-radius: 50%; background: rgba(0, 0, 0, .28); display: grid; place-items: center; }
+        .lock-btns svg { width: 45%; height: 45%; opacity: .9; }
+        .lock-home { position: absolute; bottom: 2%; left: 50%; width: 36%; height: 4px; transform: translateX(-50%); border-radius: 99px; background: rgba(255, 255, 255, .8); }
+
+        .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 99px; padding: 4px; gap: 4px; }
+        .seg label { position: relative; cursor: pointer; }
+        .seg input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+        .seg span { display: block; padding: .55rem 1.05rem; border-radius: 99px; transition: background-color .25s, color .25s; }
+        .seg input:checked + span { background: var(--ink); color: var(--paper); }
+        .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn:hover { transform: none; }
+            .halo, .screen-am, .wt-panel, .iphone, .lang-pill span { transition: none; }
+            .wt-track.is-glow .halo { animation: none; }
         }
     </style>
 </head>
-<body>
+<body class="font-sans">
 
-    <div class="scroll-progress" aria-hidden="true"><span></span></div>
-    <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
-
-    <nav class="site-nav">
-        <div class="wrap">
-            <a href="../../" class="nav-brand">Fueera<sup>®</sup></a>
-            <span class="nav-mid mono">EOTC Calendar / የኢትዮጵያ ኦርቶዶክስ</span>
-            <a href="../../" class="nav-back mono">[ All apps ]</a>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="hero-grid">
-            <div class="hero-copy">
-                <img src="../../assets/icons/eotc-calendar-icon.png" alt="" class="hero-icon">
-                <h1 class="display" data-split>EOTC Calendar</h1>
-                <p class="hero-tagline">Your daily spiritual companion.</p>
-                <ul class="hero-meta mono">
-                    <li>iPhone</li>
-                    <li>Apple Watch</li>
-                    <li>Widgets</li>
-                </ul>
-                <div class="hero-actions">
-                    <a href="https://apps.apple.com/us/app/eotc-calendar/id6759210779" class="btn" data-magnetic="0.3">
-                        <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                        App Store
-                    </a>
-                    <a href="#features" class="btn btn-ghost" data-magnetic="0.25">Features</a>
-                </div>
-            </div>
-            <div class="hero-media">
-                <img src="../../assets/screenshots/eotc-calendar/hero.jpg" alt="EOTC Calendar showing the day's fast, saint of the day, and upcoming holy days" class="hero-shot" width="828" height="1792" data-parallax="0.06">
-            </div>
-        </div>
+    <!-- =========================== NAV =========================== -->
+    <header class="site-nav fixed inset-x-0 top-0 z-50">
+        <nav class="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-5 sm:px-8 lg:px-12" aria-label="Primary">
+            <a href="../../" class="text-[1.05rem] font-light uppercase tracking-[.42em]">Fueera</a>
+            <span class="hidden font-mono text-[.66rem] uppercase tracking-[.16em] text-ink-soft md:block">001 / EOTC Calendar</span>
+            <a href="../../" class="font-mono text-[.66rem] uppercase tracking-[.16em] hover:underline">[ All apps ]</a>
+        </nav>
     </header>
 
-    <div class="marquee" aria-hidden="true">
-        <div class="marquee-track">
-            <span>Fasts &amp; Feasts</span>
-            <span>Daily Saints</span>
-            <span>ጾም እና በዓላት</span>
-        </div>
-    </div>
-
     <main>
-        <section class="section" id="features">
-            <div class="section-head">
-                <span class="section-kicker mono">01 — What it does</span>
-                <h2 data-split>The church calendar, every day</h2>
-                <p class="lede" data-reveal>EOTC Calendar is a complete digital liturgical calendar for the Ethiopian Orthodox Tewahedo Church. It tells you what fast you are in, which saint the day belongs to, and what is coming — with reminders that arrive on time, widgets on your Lock Screen, and a full Amharic interface alongside English.</p>
+        <!-- =========================== 01 HERO =========================== -->
+        <section class="mx-auto grid max-w-[1320px] items-center gap-12 px-5 pb-16 pt-28 sm:px-8 lg:min-h-[88svh] lg:grid-cols-12 lg:gap-6 lg:px-12 lg:pb-10">
+            <div class="lg:col-span-6">
+                <div class="mb-8 flex items-center gap-4">
+                    <img src="../../assets/icons/eotc-calendar-icon.png" alt="" class="h-12 w-12 rounded-[22%]">
+                    <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-ink-soft">Productivity · iPhone, iPad, Watch &amp; Mac</p>
+                </div>
+
+                <h1 class="leading-none">
+                    <span class="block text-[clamp(3rem,8vw,6.4rem)] font-extrabold tracking-[-.035em]">EOTC Calendar</span>
+                    <span class="mt-5 block font-ethi text-[clamp(1.05rem,2vw,1.45rem)] font-semibold leading-snug text-accent-text" lang="am">የኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተ ክርስቲያን</span>
+                </h1>
+
+                <p class="mt-9 max-w-[24ch] text-[clamp(1.45rem,2.6vw,2.15rem)] font-light leading-[1.18] tracking-[-.01em]">Your daily spiritual companion.</p>
+                <p class="mt-6 max-w-[54ch] text-[1.05rem] leading-relaxed text-ink-soft">
+                    Every fast, feast and saint's day of the Ethiopian Orthodox Tewahedo Church, in English and Amharic — for a diaspora whose church keeps different dates from the country around it.
+                </p>
+
+                <div class="mt-9 flex flex-wrap gap-3">
+                    <a href="https://apps.apple.com/us/app/eotc-calendar/id6759210779" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                        App Store
+                    </a>
+                    <a href="#walkthrough" class="btn btn-ghost">Walk through a day</a>
+                </div>
+
+                <ul class="mt-8 flex flex-wrap gap-2 font-mono text-[.62rem] uppercase tracking-[.14em] text-ink-soft">
+                    <li class="chip">Free</li>
+                    <li class="chip">English &amp; <span class="font-ethi normal-case tracking-normal" lang="am">አማርኛ</span></li>
+                    <li class="chip">Widgets &amp; Apple Watch</li>
+                </ul>
             </div>
 
-            <ol class="features" data-stagger>
-                <li class="feature">
-                    <span class="feature-num">01</span>
-                    <h3>The Ethiopian calendar</h3>
-                    <p>Browse months, holidays, and feasts easily. Every day is marked as a feast, a fast, or a Marian commemoration, with the saint of the day and a daily prayer.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">02</span>
-                    <h3>English and አማርኛ</h3>
-                    <p>Switch the entire interface between English and Amharic, and turn on Ge'ez numerals when you want dates written the traditional way.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">03</span>
-                    <h3>Track every fast</h3>
-                    <p>Great Lent, Advent to Gena, Assumption to Filseta, the Apostles' Fast, Nineveh, and the Gehad eves — each one tracked with automatic notifications and live status.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">04</span>
-                    <h3>Monthly commemorations</h3>
-                    <p>Follow the monthly cycle of saints — Lideta Mariam, Abba Gubs, Ba'eta Mariam, Yohannes, Petros wa Pawlos and the rest — and choose which ones remind you.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">05</span>
-                    <h3>Church finder</h3>
-                    <p>Find the nearest Ethiopian Orthodox Tewahedo churches around you, wherever you happen to be.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">06</span>
-                    <h3>Lock and Home Screen widgets</h3>
-                    <p>Always know the date and what the day holds, without opening the app.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">07</span>
-                    <h3>Digital Fasting</h3>
-                    <p>Fast from more than food. Block distracting apps for the whole fasting day or on a schedule that fits work, prayer, and family time.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">08</span>
-                    <h3>A cooldown, not a wall</h3>
-                    <p>Try to unlock early and you get a short pause with a mindfulness prompt — time to reconsider whether you really need that app right now.</p>
-                </li>
-            </ol>
-        </section>
-
-        <section class="section shots-section">
-            <div class="section-head">
-                <span class="section-kicker mono">02 — A closer look</span>
-                <h2 data-split>See it running</h2>
-            </div>
-            <div class="shots" data-drag>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/today.jpg" alt="Today view showing Hamle 30, 2018, no fast today, and Markos / Yohannes as saint of the day" width="828" height="1792" loading="lazy"><figcaption>01 / Today</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/today-amharic.jpg" alt="The same Today view with the full interface in Amharic and Ge'ez numerals" width="828" height="1792" loading="lazy"><figcaption>02 / In Amharic</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/calendar.jpg" alt="Month grid for August 2026 with feast, fast, and Marian days colour coded" width="828" height="1792" loading="lazy"><figcaption>03 / Month view</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/lock-widgets.jpg" alt="Lock Screen widget setup showing the Ethiopian date and Addis Ababa time" width="828" height="1792" loading="lazy"><figcaption>04 / Lock Screen</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/church-finder.jpg" alt="Church Finder screen offering to locate nearby Ethiopian Orthodox Tewahedo churches" width="828" height="1792" loading="lazy"><figcaption>05 / Church finder</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/fast-tracking.jpg" alt="Choosing which fasts to track, including Great Lent, Advent, Assumption, and Nineveh" width="828" height="1792" loading="lazy"><figcaption>06 / Fast tracking</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/digital-fasting.jpg" alt="Digital Fasting setup explaining fasting day mode, custom schedule, and cooldown period" width="828" height="1792" loading="lazy"><figcaption>07 / Digital Fasting</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/blocking.jpg" alt="A blocked app screen during Great Lent with a reflective prompt" width="828" height="1792" loading="lazy"><figcaption>08 / Blocked</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/eotc-calendar/settings.jpg" alt="Settings showing language, Ge'ez numerals, notification, and fast tracking options" width="828" height="1792" loading="lazy"><figcaption>09 / Settings</figcaption></figure>
+            <!-- The church year as a ring: thirteen months from Meskerem at
+                 the top, the fasts inside, the feasts outside, and today. -->
+            <div class="flex flex-col items-center lg:col-span-6 lg:items-end">
+                <div class="flex flex-col items-center">
+                    <div class="ring-wrap" id="ring" tabindex="0" role="slider" aria-label="Explore the church year, one day at a time">
+                        <canvas aria-hidden="true"></canvas>
+                        <div class="ring-centre">
+                            <p class="rc-kicker" id="rc-kicker">Today</p>
+                            <p class="rc-am" id="rc-am" lang="am"></p>
+                            <p class="rc-en" id="rc-en"></p>
+                            <p class="rc-greg" id="rc-greg"></p>
+                            <p class="rc-status" id="rc-status"></p>
+                            <p class="rc-note" id="rc-note"></p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[.6rem] uppercase tracking-[.14em] text-ink-soft">
+                        <span id="ring-year">Church year</span>
+                        <span><span class="legend-dot" style="background: var(--gold)"></span> Feast</span>
+                        <span><span class="legend-bar"></span> Fast</span>
+                        <button type="button" id="ring-today" class="text-accent-text underline-offset-4 hover:underline" hidden>&#8634; Back to today</button>
+                    </div>
+                    <p class="mt-2 text-center text-sm text-ink-soft"><span class="hidden sm:inline">Hover, tap or use the arrow keys</span><span class="sm:hidden">Tap anywhere on the ring</span> to explore the year.</p>
+                </div>
             </div>
         </section>
 
-        <section class="cta-section">
-            <div class="wrap">
-                <h2 class="display" data-split>Get EOTC Calendar</h2>
-                <p>On the App Store for iPhone and Apple Watch</p>
-                <a href="https://apps.apple.com/us/app/eotc-calendar/id6759210779" class="btn" data-magnetic="0.35">
-                    <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                    Download
+        <!-- =========================== 02 WALKTHROUGH =========================== -->
+        <section id="walkthrough" class="walkthrough relative h-[100svh] overflow-hidden" aria-labelledby="wt-title">
+            <!-- Vertical padding keeps the screens clear of the fixed nav
+                 above and the progress row below. -->
+            <div class="wt-track h-full gap-[6vw] px-[6vw] pb-14 pt-16 lg:gap-[4vw]">
+
+                <div class="wt-intro w-[82vw] sm:w-[60vw] lg:w-[34vw]">
+                    <p class="mb-6 font-mono text-[.68rem] uppercase tracking-[.18em] text-accent">02 — A closer look</p>
+                    <h2 id="wt-title" class="text-[clamp(2rem,4vw,3.4rem)] font-bold leading-[1.04] tracking-[-.025em]">A day in the Church's calendar.</h2>
+                    <p class="wt-soft mt-6 max-w-[40ch] text-[1.05rem] leading-relaxed">
+                        <span data-motion>Keep scrolling — watch the first screen change language as it passes.</span>
+                        <span data-static class="hidden">Swipe, or use the arrows below, to see all five screens.</span>
+                    </p>
+                </div>
+
+                <article class="wt-panel wt-today w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Today">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/eotc-today.jpg" alt="EOTC Calendar Today screen: Hamle 30, 2018 (August 6, 2026), no fast today, Markos / Yohannes as saint of the day, the next holy day and a daily prayer" decoding="async">
+                            <img class="screen-am" src="../../assets/screens/eotc-today-am.jpg" alt="The same Today screen in Amharic, with the date written in Ge'ez numerals" decoding="async">
+                            <div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <!-- The language pill shares the kicker's line, so this
+                                 caption is no taller than the others. -->
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">01 · Today</p>
+                                <p class="font-mono text-[.58rem] uppercase tracking-[.12em]">
+                                    <span class="lang-pill" data-motion aria-hidden="true"><span class="l-en">English</span><span class="l-am font-ethi normal-case tracking-normal">አማርኛ</span></span>
+                                    <button type="button" class="lang-pill hidden" data-static id="lang-toggle" aria-pressed="false" aria-label="Show this screen in Amharic"><span class="l-en">English</span><span class="l-am font-ethi normal-case tracking-normal">አማርኛ</span></button>
+                                </p>
+                            </div>
+                            <h3 class="mt-3 text-xl font-bold leading-tight lg:text-2xl">Every day, named.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Both dates, Addis Ababa time, the day's fast and its saint — in English or Amharic, with Ge'ez numerals if you like.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Month">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/eotc-month.jpg" alt="Month view for August 2026 with each day's Ethiopian date and feast, fast and Marian days marked; below, Thursday Hamle 30 with its saint and no fast" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">02 · Month</p>
+                            <h3 class="mt-3 text-xl font-bold leading-tight lg:text-2xl">The whole month, marked.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Feasts, fasts and Marian days in both calendars. Tap any day for its saint and whether it's a fast.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Fasts">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/eotc-fasts.jpg" alt="Choosing which fasts to track: Great Lent, Advent, Assumption, Apostles, Nineveh, and the Christmas and Epiphany eves" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">03 · Fasts</p>
+                            <h3 class="mt-3 text-xl font-bold leading-tight lg:text-2xl">Track every fast.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Great Lent, Advent, the Assumption, the Apostles' fast, Nineveh and the Gehad eves — with a notification as each one begins.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel wt-glow w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Digital Fasting">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone">
+                            <div class="halo" aria-hidden="true"></div>
+                            <div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                                <img src="../../assets/screens/eotc-block.jpg" alt="Digital Fasting Active: a blocked app during Great Lent, eight days remaining, with the question: what are three things you're thankful for right now?" decoding="async"><div class="iphone__island"></div>
+                            </div></div></div>
+                        </div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">04 · Digital Fasting</p>
+                            <h3 class="mt-3 text-xl font-bold leading-tight lg:text-2xl">Fast from more than food.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Block distracting apps for the fasting day or on a schedule. Unlock early and you wait through a short, reflective cooldown.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Church Finder">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/eotc-church.jpg" alt="Church Finder: find nearby Ethiopian Orthodox Tewahedo churches once location is allowed" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">05 · Church Finder</p>
+                            <h3 class="mt-3 text-xl font-bold leading-tight lg:text-2xl">A church, wherever you are.</h3>
+                            <p class="wt-soft mt-3 text-[.95rem] leading-relaxed lg:text-base">Ethiopian Orthodox Tewahedo parishes near you, with service times and contact details.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Trailing room so the last screen can reach the centre:
+                     half the viewport, minus half a panel, minus the padding. -->
+                <div class="w-[3vw] flex-none sm:w-[14vw] lg:w-[21vw]" aria-hidden="true"></div>
+            </div>
+
+            <!-- Progress: which screen is centred, and how far along the day -->
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 px-[6vw] pb-7">
+                <div class="flex items-center justify-between gap-6 font-mono text-[.62rem] uppercase tracking-[.16em]">
+                    <p class="wt-soft whitespace-nowrap"><span id="wt-index" class="text-accent">00</span> / 05 · <span id="wt-name">A closer look</span></p>
+                    <div class="flex items-center gap-4">
+                        <!-- Shown only on the static strip, where there's no
+                             scroll-driven motion to move the screens. -->
+                        <div class="wt-arrows pointer-events-auto hidden gap-2">
+                            <button type="button" class="wt-arrow" data-dir="-1" aria-label="Previous screen">&larr;</button>
+                            <button type="button" class="wt-arrow" data-dir="1" aria-label="Next screen">&rarr;</button>
+                        </div>
+                        <div class="wt-bars flex w-[26vw] max-w-[360px] gap-1.5 sm:w-[42vw]" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================== 03 LOCK SCREEN =========================== -->
+        <section id="widget" class="mx-auto grid max-w-[1320px] items-center gap-14 px-5 py-28 sm:px-8 lg:grid-cols-12 lg:gap-10 lg:px-12 lg:py-36" aria-labelledby="widget-title">
+            <div class="lg:col-span-6">
+                <p class="mb-6 font-mono text-[.68rem] uppercase tracking-[.18em] text-accent-text">03 — On your Lock Screen</p>
+                <h2 id="widget-title" class="text-[clamp(2.2rem,4.4vw,3.8rem)] font-bold leading-[1.04] tracking-[-.025em]">The date back home, always in view.</h2>
+                <p class="mt-6 max-w-[48ch] text-[1.05rem] leading-relaxed text-ink-soft">
+                    The Lock Screen widget keeps today's Ethiopian date and the time in Addis Ababa beside your own. Set the language and numerals the way you would in the app.
+                </p>
+
+                <div class="mt-10 grid gap-6">
+                    <fieldset>
+                        <legend class="mb-3 font-mono text-[.62rem] uppercase tracking-[.16em] text-ink-soft">Language</legend>
+                        <div class="seg text-sm">
+                            <label><input type="radio" name="w-lang" value="en" checked><span>English</span></label>
+                            <label><input type="radio" name="w-lang" value="am"><span class="font-ethi" lang="am">አማርኛ</span></label>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend class="mb-3 font-mono text-[.62rem] uppercase tracking-[.16em] text-ink-soft">Numerals</legend>
+                        <div class="seg text-sm">
+                            <label><input type="radio" name="w-num" value="arabic" checked><span>1 2 3</span></label>
+                            <label><input type="radio" name="w-num" value="geez"><span class="font-ethi">፩ ፪ ፫ <span class="sr-only">Ge'ez</span></span></label>
+                        </div>
+                    </fieldset>
+                </div>
+                <p class="mt-8 font-mono text-[.62rem] uppercase tracking-[.14em] text-ink-soft">Live: your date and time, and Addis Ababa's.</p>
+            </div>
+
+            <div class="flex justify-center lg:col-span-6">
+                <div class="lock w-full max-w-[330px]">
+                    <div class="lock-screen" role="img" aria-labelledby="lock-label">
+                        <div class="lock-island"></div>
+                        <p class="lock-date" id="lock-date">Sunday, September 27</p>
+                        <p class="lock-time" id="lock-time">9:41</p>
+                        <div class="lock-widget">
+                            <div class="min-w-0">
+                                <p class="w-main" id="w-main">MESKEREM 17</p>
+                                <p class="w-sub" id="w-sub">Sep 27</p>
+                                <p class="w-alt" id="w-alt" lang="am">መስከረም</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="w-addis" id="w-addis">10:47 PM</p>
+                                <p class="w-addis-label" id="w-addis-label">Addis time</p>
+                            </div>
+                        </div>
+                        <div class="lock-btns" aria-hidden="true">
+                            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1 6h-4z"/><path d="M10 9h4v11a2 2 0 0 1-4 0z"/></svg></span>
+                            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+                        </div>
+                        <div class="lock-home"></div>
+                    </div>
+                    <p class="sr-only" id="lock-label" aria-live="polite"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================== CTA =========================== -->
+        <section class="border-t" style="border-color: var(--line)">
+            <div class="tricolour" aria-hidden="true"></div>
+            <div class="mx-auto flex max-w-[1320px] flex-col items-start justify-between gap-8 px-5 py-24 sm:px-8 lg:flex-row lg:items-end lg:px-12">
+                <div>
+                    <h2 class="text-[clamp(2.2rem,5vw,4.2rem)] font-bold leading-[1.02] tracking-[-.025em]">Keep the Church's rhythm, wherever you are.</h2>
+                    <p class="mt-5 max-w-[52ch] text-ink-soft">Free on the App Store for iPhone, iPad, Apple Watch and Mac.</p>
+                </div>
+                <a href="https://apps.apple.com/us/app/eotc-calendar/id6759210779" class="btn btn-primary flex-none">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                    Get EOTC Calendar
                 </a>
             </div>
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="wrap">
-            <span class="mono">&copy; 2026 Fueera LLC</span>
-            <nav class="footer-links mono">
-                <a href="../../">All apps</a>
-                <a href="mailto:support@fueera.com">Support</a>
-                <a href="../../privacy-policy/">Privacy</a>
+    <footer class="border-t" style="border-color: var(--line)">
+        <div class="mx-auto flex max-w-[1320px] flex-wrap items-baseline justify-between gap-6 px-5 py-10 font-mono text-[.64rem] uppercase tracking-[.14em] sm:px-8 lg:px-12">
+            <span class="text-ink-soft">&copy; 2026 Fueera LLC</span>
+            <nav class="flex flex-wrap gap-x-8 gap-y-3" aria-label="Footer">
+                <a href="../../" class="hover:underline">All apps</a>
+                <a href="mailto:support@fueera.com" class="hover:underline">Support</a>
+                <a href="../../privacy-policy/" class="hover:underline">Privacy Policy</a>
             </nav>
         </div>
     </footer>
 
-    <script src="../../assets/js/motion.js?v=2" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* ==================================================================
+           The church year
+           Ethiopian dates use the fixed-date algorithm of Dershowitz &
+           Reingold (Amete Mihret epoch JDN 1724221). Fasika follows the
+           Julian computus, the same date as Eastern Orthodox Easter; the
+           moveable fasts hang off it. Fast lengths match the app's own
+           list: Great Lent 55 days, Advent 43, Assumption 16, Nineveh 3,
+           the Gehad eves 1 day each, the Apostles' fast variable.
+           ================================================================== */
+        var CAL = (function () {
+            var EPOCH = 1724221;
+            var MONTHS = ['Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit', 'Megabit', 'Miyazya', 'Ginbot', 'Sene', 'Hamle', 'Nehase', 'Pagume'];
+            var MONTHS_AM = ['መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'];
+            var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            var GMONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            // Year of the Evangelist, by year mod 4
+            var EVANGELIST = ['John', 'Matthew', 'Mark', 'Luke'];
+
+            function jdnFromGreg(y, m, d) { return Math.floor(Date.UTC(y, m - 1, d) / 86400000) + 2440588; }
+            function gregFromJdn(j) {
+                var t = new Date((j - 2440588) * 86400000);
+                return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), wd: t.getUTCDay() };
+            }
+            function jdnFromEth(y, m, d) { return EPOCH - 1 + 365 * (y - 1) + Math.floor(y / 4) + 30 * (m - 1) + d; }
+            function ethFromJdn(j) {
+                var y = Math.floor((4 * (j - EPOCH) + 1463) / 1461);
+                var start = jdnFromEth(y, 1, 1);
+                var m = Math.floor((j - start) / 30) + 1;
+                return { y: y, m: m, d: j - start - (m - 1) * 30 + 1 };
+            }
+            function todayJdn() { var n = new Date(); return jdnFromGreg(n.getFullYear(), n.getMonth() + 1, n.getDate()); }
+
+            // Meeus's Julian Easter, then +13 days into the Gregorian calendar
+            // (valid 1900-03-01 .. 2100-02-28).
+            function fasika(gYear) {
+                var a = gYear % 4, b = gYear % 7, c = gYear % 19;
+                var d = (19 * c + 15) % 30;
+                var e = (2 * a + 4 * b - d + 34) % 7;
+                return jdnFromGreg(gYear, Math.floor((d + e + 114) / 31), ((d + e + 114) % 31) + 1) + 13;
+            }
+
+            function geez(n) {
+                var ones = ['', '፩', '፪', '፫', '፬', '፭', '፮', '፯', '፰', '፱'];
+                var tens = ['', '፲', '፳', '፴', '፵', '፶', '፷', '፸', '፹', '፺'];
+                function two(x) { return tens[Math.floor(x / 10)] + ones[x % 10]; }
+                if (n < 100) return two(n);
+                var hi = Math.floor(n / 100), lo = n % 100;
+                return (hi === 1 ? '' : two(hi)) + '፻' + (lo ? two(lo) : '');
+            }
+
+            var cache = {};
+            function year(Y) {
+                if (cache[Y]) return cache[Y];
+                var F = fasika(Y + 8);
+                var gena = jdnFromGreg(Y + 8, 1, 7);
+                var timket = jdnFromEth(Y, 5, 11);
+                var advent = jdnFromEth(Y, 3, 15);
+                return (cache[Y] = {
+                    Y: Y, start: jdnFromEth(Y, 1, 1), length: Y % 4 === 3 ? 366 : 365,
+                    fasika: F, gena: gena, timket: timket,
+                    feasts: [
+                        { j: jdnFromEth(Y, 1, 1), en: 'Enkutatash', am: 'እንቁጣጣሽ', note: 'New Year' },
+                        { j: jdnFromEth(Y, 1, 17), en: 'Meskel', am: 'መስቀል', note: 'Finding of the True Cross' },
+                        { j: gena, en: 'Gena', am: 'ገና', note: 'Christmas' },
+                        { j: timket, en: 'Timket', am: 'ጥምቀት', note: 'Epiphany' },
+                        { j: F, en: 'Fasika', am: 'ፋሲካ', note: 'Easter' },
+                        { j: jdnFromEth(Y, 12, 13), en: 'Debre Tabor', am: 'ደብረ ታቦር', note: 'Transfiguration' },
+                        { j: jdnFromEth(Y, 12, 16), en: 'Filseta', am: 'ፍልሰታ', note: 'Assumption of Mary' }
+                    ],
+                    fasts: [
+                        { from: F - 69, to: F - 67, en: 'Nineveh', am: 'ጾመ ነነዌ' },
+                        { from: F - 55, to: F - 1, en: 'Great Lent', am: 'ዐቢይ ጾም' },
+                        { from: F + 50, to: jdnFromEth(Y, 11, 4), en: "Apostles' fast", am: 'ጾመ ሐዋርያት' },
+                        { from: jdnFromEth(Y, 12, 1), to: jdnFromEth(Y, 12, 16), en: 'Assumption fast', am: 'ጾመ ፍልሰታ' },
+                        { from: advent, to: advent + 42, en: 'Advent', am: 'ጾመ ነቢያት' },
+                        { from: gena - 1, to: gena - 1, en: 'Gehad · Christmas Eve', am: 'ገሀድ' },
+                        { from: timket - 1, to: timket - 1, en: 'Gehad · Epiphany Eve', am: 'ገሀድ' }
+                    ]
+                });
+            }
+
+            // What a day holds: a feast, a named fast, the Wednesday/Friday
+            // fast (not in the fifty days after Fasika, nor on Gena or Timket),
+            // or none. Feast days make no claim about fasting.
+            function day(j) {
+                var e = ethFromJdn(j), g = gregFromJdn(j), cy = year(e.y);
+                var feast = null, fast = null, weekly = false, k;
+                for (k = 0; k < cy.feasts.length; k++) if (cy.feasts[k].j === j) feast = cy.feasts[k];
+                for (k = 0; k < cy.fasts.length; k++) if (j >= cy.fasts[k].from && j <= cy.fasts[k].to) fast = cy.fasts[k];
+                if (!feast && !fast && (g.wd === 3 || g.wd === 5)) {
+                    weekly = !(j >= cy.fasika && j <= cy.fasika + 49) && j !== cy.gena && j !== cy.timket;
+                }
+                return { j: j, e: e, g: g, feast: feast, fast: fast, weekly: weekly };
+            }
+
+            return { MONTHS: MONTHS, MONTHS_AM: MONTHS_AM, DAYS: DAYS, GMONTHS: GMONTHS, EVANGELIST: EVANGELIST,
+                gregFromJdn: gregFromJdn, ethFromJdn: ethFromJdn, todayJdn: todayJdn, geez: geez, year: year, day: day };
+        })();
+
+        /* ==================================================================
+           01 — The church-year ring
+           A static layer (months, fasts, feasts, labels) is drawn once to an
+           offscreen canvas and redrawn only when it changes; each frame just
+           composites it and adds today's pulse and the explored day.
+           ================================================================== */
+        (function ring() {
+            var wrap = document.getElementById('ring');
+            var canvas = wrap.querySelector('canvas');
+            var ctx = canvas.getContext('2d');
+            var layer = document.createElement('canvas');
+            var lctx = layer.getContext('2d');
+            var todayBtn = document.getElementById('ring-today');
+            var out = {
+                kicker: document.getElementById('rc-kicker'), am: document.getElementById('rc-am'),
+                en: document.getElementById('rc-en'), greg: document.getElementById('rc-greg'),
+                status: document.getElementById('rc-status'), note: document.getElementById('rc-note')
+            };
+            var TAU = Math.PI * 2, TOP = -Math.PI / 2;
+            var today = CAL.todayJdn();
+            var cy = CAL.year(CAL.ethFromJdn(today).y);
+            var S = 0, R = 0, dpr = 1;
+            var col = {};
+            var sel = today;
+            var sweep = reduced ? 1 : 0, sweepStart = 0, SWEEP_MS = 1500;
+            var running = false, visible = true;
+            var t0 = performance.now();
+
+            document.getElementById('ring-year').textContent =
+                'Church year ' + cy.Y + ' · Year of ' + CAL.EVANGELIST[cy.Y % 4];
+
+            function hex(v, fallback) {
+                var m = (v || '').trim().match(/^#([0-9a-f]{6})$/i);
+                return m ? [0, 2, 4].map(function (i) { return parseInt(m[1].substr(i, 2), 16); }) : fallback;
+            }
+            function rgba(c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+            function readColours() {
+                var cs = getComputedStyle(document.documentElement);
+                col.ink = hex(cs.getPropertyValue('--ink'), [30, 45, 52]);
+                col.soft = hex(cs.getPropertyValue('--ink-soft'), [86, 102, 109]);
+                col.accent = hex(cs.getPropertyValue('--accent'), [226, 145, 63]);
+                col.gold = hex(cs.getPropertyValue('--gold'), [184, 130, 62]);
+            }
+            function at(j) { return TOP + ((j - cy.start) / cy.length) * TAU; }       // start of day j
+            function mid(j) { return TOP + ((j - cy.start + 0.5) / cy.length) * TAU; }
+
+            function size() {
+                dpr = Math.min(2, window.devicePixelRatio || 1);
+                S = canvas.getBoundingClientRect().width;
+                [canvas, layer].forEach(function (c) { c.width = c.height = Math.round(S * dpr); });
+                R = S * 0.34;
+            }
+
+            function drawLayer() {
+                var c = lctx, cx = S / 2;
+                var limit = TOP + sweep * TAU;
+                c.setTransform(dpr, 0, 0, dpr, 0, 0);
+                c.clearRect(0, 0, S, S);
+                function arc(r, a0, a1, style, width, cap) {
+                    a1 = Math.min(a1, limit);
+                    if (a1 <= a0) return;
+                    c.beginPath(); c.arc(cx, cx, r, a0, a1);
+                    c.strokeStyle = style; c.lineWidth = width; c.lineCap = cap || 'butt'; c.stroke();
+                }
+
+                // Months: the year so far in solid ink, the rest faint.
+                var gap = 0.012, done = at(today + 1);
+                c.font = '600 ' + Math.max(10, S * 0.027) + 'px "Noto Serif Ethiopic", serif';
+                c.textAlign = 'center'; c.textBaseline = 'middle';
+                for (var m = 0; m < 13; m++) {
+                    var first = cy.start + m * 30, len = m < 12 ? 30 : cy.length - 360;
+                    var a0 = at(first) + gap / 2, a1 = at(first + len) - gap / 2;
+                    arc(R, a0, a1, rgba(col.ink, 0.13), R * 0.03);
+                    arc(R, a0, Math.min(a1, done), rgba(col.ink, 0.45), R * 0.03);
+                    var am = (a0 + a1) / 2;
+                    // Labels fade in just behind the sweep; all are full once it ends.
+                    var shown = sweep >= 1 ? 1 : Math.max(0, Math.min(1, (limit - am) / 0.4));
+                    if (shown > 0) {
+                        c.fillStyle = rgba(col.soft, 0.95 * shown);
+                        c.fillText(CAL.MONTHS_AM[m], cx + R * 1.27 * Math.cos(am), cx + R * 1.27 * Math.sin(am));
+                    }
+                }
+
+                // Fasts, on an inner band.
+                cy.fasts.forEach(function (f) {
+                    arc(R * 0.86, at(f.from), at(f.to + 1), rgba(col.accent, 0.9), R * 0.045, 'round');
+                });
+
+                // Feasts, as gold points just outside the ring.
+                cy.feasts.forEach(function (f) {
+                    var a = mid(f.j);
+                    if (a > limit) return;
+                    c.beginPath();
+                    c.arc(cx + R * 1.11 * Math.cos(a), cx + R * 1.11 * Math.sin(a), R * 0.03, 0, TAU);
+                    c.fillStyle = rgba(col.gold, 1); c.fill();
+                });
+            }
+
+            function frame(now) {
+                var cx = S / 2;
+                if (sweep < 1) {
+                    var p = Math.min(1, (now - sweepStart) / SWEEP_MS);
+                    sweep = 1 - Math.pow(1 - p, 3);
+                    drawLayer();
+                }
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(layer, 0, 0);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                // The day being explored: a radial tick through the ring.
+                if (sel !== today) {
+                    var s = mid(sel);
+                    ctx.beginPath();
+                    ctx.moveTo(cx + R * 0.76 * Math.cos(s), cx + R * 0.76 * Math.sin(s));
+                    ctx.lineTo(cx + R * 1.18 * Math.cos(s), cx + R * 1.18 * Math.sin(s));
+                    ctx.strokeStyle = rgba(col.ink, 0.85); ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.stroke();
+                }
+
+                // Today: a glowing point on the ring, breathing slowly.
+                var a = mid(today);
+                if (a <= TOP + sweep * TAU) {
+                    var hx = cx + R * Math.cos(a), hy = cx + R * Math.sin(a);
+                    if (!reduced) {
+                        var q = ((now - t0) % 2600) / 2600;
+                        ctx.beginPath(); ctx.arc(hx, hy, R * (0.05 + 0.09 * q), 0, TAU);
+                        ctx.strokeStyle = rgba(col.accent, 0.55 * (1 - q)); ctx.lineWidth = 1.5; ctx.stroke();
+                    }
+                    ctx.save();
+                    ctx.shadowColor = rgba(col.accent, 0.9); ctx.shadowBlur = 16;
+                    ctx.beginPath(); ctx.arc(hx, hy, R * 0.05, 0, TAU);
+                    ctx.fillStyle = rgba(col.accent, 1); ctx.fill();
+                    ctx.restore();
+                }
+
+                if (running) requestAnimationFrame(frame);
+            }
+
+            function setRunning(on) {
+                var was = running;
+                running = on && !reduced;
+                if (running && !was) requestAnimationFrame(frame);
+            }
+            function paint() { if (!running) frame(performance.now()); }
+
+            // The centre: the explored day in both scripts, and what it holds.
+            function describe(j) {
+                var d = CAL.day(j);
+                var en = CAL.MONTHS[d.e.m - 1] + ' ' + d.e.d + ', ' + d.e.y;
+                var greg = CAL.GMONTHS[d.g.m - 1] + ' ' + d.g.d + ', ' + d.g.y;
+                var status, note = '', kind;
+                if (d.feast) { status = '✦ ' + d.feast.en + ' · ' + d.feast.am; note = d.feast.note; kind = 'is-feast'; }
+                else if (d.fast) { status = d.fast.en; note = d.fast.am + ' · fast day'; kind = 'is-fast'; }
+                else if (d.weekly) { status = CAL.DAYS[d.g.wd] + ' fast'; note = 'The weekly fast'; kind = 'is-fast'; }
+                else { status = 'No fast'; kind = 'is-none'; }
+                out.kicker.textContent = (j === today ? 'Today · ' : '') + CAL.DAYS[d.g.wd];
+                out.am.textContent = CAL.MONTHS_AM[d.e.m - 1] + ' ' + CAL.geez(d.e.d);
+                out.en.textContent = en;
+                out.greg.textContent = greg;
+                out.status.textContent = status;
+                out.status.className = 'rc-status ' + kind;
+                out.note.textContent = note;
+                wrap.setAttribute('aria-valuetext', (j === today ? 'Today, ' : '') + CAL.DAYS[d.g.wd] + ', ' + en + ' — ' + greg + '. ' + status.replace('✦ ', '') + (note ? ', ' + note : '') + '.');
+            }
+
+            function select(j) {
+                j = Math.max(cy.start, Math.min(cy.start + cy.length - 1, j));
+                if (j === sel && out.en.textContent) return;
+                sel = j;
+                describe(j);
+                wrap.setAttribute('aria-valuenow', String(j - cy.start + 1));
+                todayBtn.hidden = j === today;
+                paint();
+            }
+
+            function dayAt(x, y) {
+                var r = canvas.getBoundingClientRect();
+                var dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
+                var dist = Math.hypot(dx, dy) / r.width * S;
+                if (dist < R * 0.62 || dist > R * 1.5) return null;
+                var a = (Math.atan2(dy, dx) - TOP + TAU) % TAU;
+                return cy.start + Math.min(cy.length - 1, Math.floor(a / TAU * cy.length));
+            }
+
+            wrap.setAttribute('aria-valuemin', '1');
+            wrap.setAttribute('aria-valuemax', String(cy.length));
+            readColours(); size();
+            select(today);
+
+            // Mouse: hover explores and leaving returns to today. Touch and
+            // pen: a tap picks a day (a drag would fight page scrolling).
+            wrap.addEventListener('pointermove', function (e) {
+                if (e.pointerType !== 'mouse') return;
+                var j = dayAt(e.clientX, e.clientY);
+                select(j === null ? today : j);
+            });
+            wrap.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') select(today); });
+            wrap.addEventListener('pointerdown', function (e) {
+                if (e.pointerType === 'mouse') return;
+                var j = dayAt(e.clientX, e.clientY);
+                if (j !== null) select(j);
+            });
+            wrap.addEventListener('keydown', function (e) {
+                var step = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 30, PageDown: -30 }[e.key];
+                if (step) select(sel + step);
+                else if (e.key === 'Home') select(cy.start);
+                else if (e.key === 'End') select(cy.start + cy.length - 1);
+                else if (e.key === 'Escape') select(today);
+                else return;
+                e.preventDefault();
+            });
+            todayBtn.addEventListener('click', function () { select(today); });
+
+            window.addEventListener('resize', function () { size(); drawLayer(); paint(); });
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { readColours(); drawLayer(); paint(); });
+            // Month labels are drawn in the Ethiopic face; redraw once it lands.
+            if (document.fonts) document.fonts.load('600 12px "Noto Serif Ethiopic"', 'መስከረም').then(function () { drawLayer(); paint(); });
+
+            drawLayer();
+            if (reduced) { paint(); return; }
+            sweepStart = performance.now();
+            new IntersectionObserver(function (entries) {
+                visible = entries[0].isIntersecting;
+                setRunning(visible);
+            }).observe(canvas);
+            paint();
+        })();
+
+        /* ==================================================================
+           03 — Lock Screen widget
+           Today's Ethiopian date and the time in Addis Ababa, redrawn when
+           the minute or the settings change.
+           ================================================================== */
+        (function lockScreen() {
+            var el = {
+                date: document.getElementById('lock-date'), time: document.getElementById('lock-time'),
+                main: document.getElementById('w-main'), sub: document.getElementById('w-sub'), alt: document.getElementById('w-alt'),
+                addis: document.getElementById('w-addis'), label: document.getElementById('w-addis-label'),
+                live: document.getElementById('lock-label')
+            };
+            var addisFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'Africa/Addis_Ababa', hour: 'numeric', minute: '2-digit' });
+            var clockFmt = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
+            var dateFmt = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            var shortFmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+            var last = '';
+
+            function opt(name) { return document.querySelector('input[name="' + name + '"]:checked').value; }
+
+            function render(force) {
+                var now = new Date();
+                var stamp = now.getHours() + ':' + now.getMinutes() + opt('w-lang') + opt('w-num');
+                if (!force && stamp === last) return;
+                last = stamp;
+
+                var e = CAL.ethFromJdn(CAL.todayJdn());
+                var am = opt('w-lang') === 'am', ge = opt('w-num') === 'geez';
+                var dayNum = ge ? CAL.geez(e.d) : String(e.d);
+                // The big lock-screen clock drops AM/PM, as iOS does.
+                var clock = clockFmt.formatToParts(now).filter(function (p) { return p.type !== 'dayPeriod'; })
+                    .map(function (p) { return p.value; }).join('').trim();
+
+                el.date.textContent = dateFmt.format(now);
+                el.time.textContent = clock;
+                el.main.textContent = (am ? CAL.MONTHS_AM[e.m - 1] : CAL.MONTHS[e.m - 1].toUpperCase()) + ' ' + dayNum;
+                el.main.classList.toggle('is-ethi', am);
+                el.sub.textContent = shortFmt.format(now);
+                el.alt.textContent = am ? CAL.MONTHS[e.m - 1].toUpperCase() : CAL.MONTHS_AM[e.m - 1];
+                el.alt.classList.toggle('is-latin', am);
+                el.alt.lang = am ? 'en' : 'am';
+                el.addis.textContent = addisFmt.format(now);
+                el.label.textContent = am ? 'አዲስ አበባ' : 'Addis time';
+                el.label.classList.toggle('is-ethi', am);
+                el.live.textContent = 'Lock Screen preview. Widget shows ' + CAL.MONTHS[e.m - 1] + ' ' + e.d + ', ' +
+                    shortFmt.format(now) + ', and ' + addisFmt.format(now) + ' in Addis Ababa' +
+                    (am ? ', in Amharic' : '') + (ge ? ', with Ge\'ez numerals' : '') + '.';
+            }
+
+            document.querySelectorAll('input[name="w-lang"], input[name="w-num"]').forEach(function (i) {
+                i.addEventListener('change', function () { render(true); });
+            });
+            render(true);
+            setInterval(render, 1000);
+        })();
+
+        /* ==================================================================
+           02 — Walkthrough: pinned horizontal track
+           ================================================================== */
+        var section = document.getElementById('walkthrough');
+        var track = section.querySelector('.wt-track');
+        var panels = Array.prototype.slice.call(section.querySelectorAll('.wt-panel'));
+        var todayPanel = section.querySelector('.wt-today');
+        var glowPanel = section.querySelector('.wt-glow');
+        var langToggle = document.getElementById('lang-toggle');
+
+        function showModeCopy(motion) {
+            section.querySelectorAll('[data-motion]').forEach(function (el) { el.classList.toggle('hidden', !motion); });
+            section.querySelectorAll('[data-static]').forEach(function (el) { el.classList.toggle('hidden', motion); });
+        }
+
+        // The static strip flips the Today screen with a button instead.
+        langToggle.addEventListener('click', function () {
+            var on = todayPanel.classList.toggle('is-am');
+            langToggle.setAttribute('aria-pressed', String(on));
+            langToggle.setAttribute('aria-label', on ? 'Show this screen in English' : 'Show this screen in Amharic');
+        });
+
+        if (!window.gsap || !window.ScrollTrigger) { showModeCopy(false); return; }   // strip stays swipeable
+        gsap.registerPlugin(ScrollTrigger);
+        // Phone address bars grow and shrink mid-scroll; re-measuring on
+        // each of those resizes would make the pinned track jump.
+        ScrollTrigger.config({ ignoreMobileResize: true });
+
+        var bars = Array.prototype.slice.call(section.querySelectorAll('.wt-bars span'));
+        var idxEl = document.getElementById('wt-index');
+        var nameEl = document.getElementById('wt-name');
+
+        function setStep(i) {
+            bars.forEach(function (b, k) { b.classList.toggle('is-on', k <= i); });
+            idxEl.textContent = i < 0 ? '00' : '0' + (i + 1);
+            nameEl.textContent = i < 0 ? 'A closer look' : panels[i].dataset.name;
+        }
+
+        var mm = gsap.matchMedia();
+
+        mm.add('(prefers-reduced-motion: no-preference)', function () {
+            section.classList.add('is-pinned');
+            showModeCopy(true);
+            todayPanel.classList.remove('is-am');
+            // Travel until the last screen sits dead centre. Measured from
+            // layout offsets: scrollWidth on a transformed, overflow-visible
+            // flex track under-reports its real extent.
+            var lastPanel = panels[panels.length - 1];
+            var distance = function () {
+                return lastPanel.offsetLeft + lastPanel.offsetWidth / 2 - section.clientWidth / 2;
+            };
+            var gap = function () { return parseFloat(getComputedStyle(track).columnGap) || 0; };
+
+            var slide = gsap.to(track, {
+                x: function () { return -distance(); },
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top top',
+                    end: function () { return '+=' + distance(); },
+                    pin: true,
+                    scrub: 0.8,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true
+                }
+            });
+
+            // Cascade: each phone swings in from the right, settles flat at
+            // the centre, and swings away as the next one arrives.
+            panels.forEach(function (panel, i) {
+                var phone = panel.querySelector('.wt-phone');
+                gsap.timeline({
+                    scrollTrigger: { trigger: panel, containerAnimation: slide, start: 'left right', end: 'right left', scrub: true }
+                })
+                    .fromTo(phone, { rotateY: -34, rotateX: 6, scale: 0.84, opacity: 0.3, y: 40 },
+                        { rotateY: 0, rotateX: 0, scale: 1, opacity: 1, y: 0, ease: 'power2.out', duration: 0.5 })
+                    .to(phone, { rotateY: 26, scale: 0.9, opacity: 0.4, y: -12, ease: 'power2.in', duration: 0.5 });
+
+                // Active range runs across the gap to the next panel, so some
+                // screen is always the current step while the track moves.
+                ScrollTrigger.create({
+                    trigger: panel, containerAnimation: slide,
+                    start: 'left center',
+                    end: function () { return 'right+=' + gap() + ' center'; },
+                    onToggle: function (self) { if (self.isActive) setStep(i); }
+                });
+            });
+
+            ScrollTrigger.create({
+                trigger: panels[0], containerAnimation: slide,
+                start: 'left center',
+                onLeaveBack: function () { setStep(-1); }
+            });
+
+            // Today changes language as it passes the middle: the Amharic
+            // capture fades in over the English one, scrubbed with the scroll.
+            gsap.fromTo(todayPanel.querySelector('.screen-am'), { opacity: 0 }, {
+                opacity: 1, ease: 'none',
+                scrollTrigger: {
+                    trigger: todayPanel, containerAnimation: slide, start: 'center 60%', end: 'center 40%', scrub: true,
+                    onUpdate: function (self) { todayPanel.classList.toggle('is-am', self.progress > 0.5); }
+                }
+            });
+
+            // Digital Fasting: the halo rises while it crosses the middle.
+            ScrollTrigger.create({
+                trigger: glowPanel, containerAnimation: slide,
+                start: 'center 70%', end: 'center 30%',
+                onToggle: function (self) { track.classList.toggle('is-glow', self.isActive); }
+            });
+
+            return function () {
+                section.classList.remove('is-pinned');
+                track.classList.remove('is-glow');
+                todayPanel.classList.remove('is-am');
+                gsap.set(track, { clearProps: 'transform' });
+            };
+        });
+
+        mm.add('(prefers-reduced-motion: reduce)', function () {
+            // No pin: a swipeable strip. Arrows move it for mouse and keyboard
+            // users (its scrollbar is hidden), and the progress row follows
+            // whichever screen is nearest the middle.
+            var arrows = section.querySelector('.wt-arrows');
+            var prev = arrows.querySelector('[data-dir="-1"]');
+            var next = arrows.querySelector('[data-dir="1"]');
+            var stops = [section.querySelector('.wt-intro')].concat(panels);   // intro = step -1
+            var current = -1;
+
+            section.classList.add('is-static');
+            showModeCopy(false);
+            section.style.height = 'auto';
+            section.style.paddingBlock = '2.5rem';
+            arrows.classList.replace('hidden', 'flex');
+            track.setAttribute('role', 'region');
+            track.setAttribute('aria-label', 'EOTC Calendar screens');
+            track.tabIndex = 0;                                   // arrow keys scroll it
+
+            function nearest() {
+                var t = track.getBoundingClientRect(), mid = t.left + t.width / 2;
+                var best = 0, bestD = Infinity;
+                stops.forEach(function (el, k) {
+                    var r = el.getBoundingClientRect();
+                    var d = Math.abs(r.left + r.width / 2 - mid);
+                    if (d < bestD) { bestD = d; best = k; }
+                });
+                return best;
+            }
+            function onScroll() {
+                current = nearest();
+                setStep(current - 1);
+                // By position as well as index: at rest the strip already
+                // shows the intro and the first screen, with nowhere left to go.
+                prev.disabled = current === 0 || track.scrollLeft <= 1;
+                next.disabled = current === stops.length - 1 || track.scrollLeft >= track.scrollWidth - track.clientWidth - 1;
+            }
+            function go(e) {
+                var k = Math.max(0, Math.min(stops.length - 1, current + Number(e.currentTarget.dataset.dir)));
+                var t = track.getBoundingClientRect(), r = stops[k].getBoundingClientRect();
+                track.scrollBy({ left: r.left + r.width / 2 - (t.left + t.width / 2) });
+            }
+            track.addEventListener('scroll', onScroll, { passive: true });
+            prev.addEventListener('click', go);
+            next.addEventListener('click', go);
+            onScroll();
+
+            return function () {
+                track.removeEventListener('scroll', onScroll);
+                prev.removeEventListener('click', go);
+                next.removeEventListener('click', go);
+                arrows.classList.replace('flex', 'hidden');
+                section.classList.remove('is-static');
+                track.removeAttribute('role');
+                track.removeAttribute('aria-label');
+                track.removeAttribute('tabindex');
+                section.style.height = '';
+                section.style.paddingBlock = '';
+            };
+        });
+
+        // "Walk through a day": glide to where the walkthrough pins. The
+        // section's own box is unreliable once pinned, so aim at the
+        // trigger's start when there is one.
+        document.querySelector('a[href="#walkthrough"]').addEventListener('click', function (e) {
+            e.preventDefault();
+            var st = ScrollTrigger.getAll().filter(function (t) { return t.pin === section; })[0];
+            var top = st ? st.start : section.getBoundingClientRect().top + window.scrollY;
+            var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({ top: top, behavior: still ? 'auto' : 'smooth' });
+            history.replaceState(null, '', '#walkthrough');
+        });
+
+        // Decode the walkthrough screens ahead of time, so none of them is
+        // decoded for the first time mid-scroll.
+        section.querySelectorAll('img').forEach(function (img) {
+            if (img.decode) img.decode().catch(function () {});
+        });
+
+        // Tailwind's CDN build and the web fonts both change layout after
+        // first paint; re-measure the pinned distance once they settle.
+        window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    })();
+    </script>
 </body>
 </html>

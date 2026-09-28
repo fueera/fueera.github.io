@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ethiopian Calendar &amp; Widgets — Fueera LLC</title>
-    <meta name="description" content="A complete Ethiopian (Ge'ez) calendar for iPhone. Dual Ethiopian and Gregorian dates, home and lock screen widgets, holidays with cultural context, Ethiopian-time reminders, and an instant date converter.">
+    <meta name="description" content="The Ethiopian (Ge'ez) calendar for iPhone, iPad, Apple Watch and Mac: Ethiopian and Gregorian dates side by side, Addis Ababa time on the Ethiopian clock, holidays with their history, reminders in Ethiopian time, a date converter, and widgets.">
     <link rel="canonical" href="https://apps.fueera.com/apps/ethiopian-calendar/">
     <link rel="icon" href="../../assets/icons/ethiopian-calendar-icon.png">
     <meta property="og:title" content="Ethiopian Calendar &amp; Widgets">
@@ -12,168 +12,1170 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://apps.fueera.com/apps/ethiopian-calendar/">
     <meta property="og:image" content="https://apps.fueera.com/assets/screenshots/ethiopian-calendar/today.jpg">
+    <meta property="og:site_name" content="Fueera LLC">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2eee2">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#222222">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141821">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700;900&family=Noto+Sans+Ethiopic:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/site.css?v=2">
-    <script>document.documentElement.classList.add('js');</script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200..900&family=Noto+Sans+Ethiopic:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Source Sans 3"', '"Noto Sans Ethiopic"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+                        ethi: ['"Noto Sans Ethiopic"', '"Source Sans 3"', 'sans-serif'],
+                        mono: ['"Space Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        paper: 'var(--paper)',
+                        ink: 'var(--ink)',
+                        'ink-soft': 'var(--ink-soft)',
+                        accent: 'var(--accent)',
+                        'accent-text': 'var(--accent-text)',
+                        'night-text': 'var(--night-text)',
+                    },
+                },
+            },
+        };
+    </script>
+
     <style>
+        /* ------------------------------------------------------------------
+           Tokens. The page follows the viewer's theme; the walkthrough and
+           the Date Tools card stay dark in both, because they present the
+           app's own navy-and-gold interface. The app's titles are set in
+           Source Sans 3 Light.
+           ------------------------------------------------------------------ */
         :root {
-            --font-display: "Source Sans 3", "Noto Sans Ethiopic", "Helvetica Neue", Helvetica, Arial, sans-serif;
-            --display-tracking: -0.035em;
+            color-scheme: light dark;
+            --paper: #f2eee2;
+            --ink: #20242e;
+            --ink-soft: #5a606c;
+            --line: rgba(32, 36, 46, .14);
             --accent: #e8b54d;
-            --accent-ink: #2a303c;
-            --brand-bg: #2a303c;
+            --accent-text: #85600f;
+            --night: #5b8def;
+            --night-text: #2f5fc4;
+            --stage: #161b27;
+            --stage-ink: #ece8df;
+            --stage-soft: #9aa1ad;
+            --stage-line: rgba(236, 232, 223, .12);
+            --card: #1f2533;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #141821;
+                --ink: #ece8df;
+                --ink-soft: #9aa1ad;
+                --line: rgba(236, 232, 223, .12);
+                --accent-text: #f0c35a;
+                --night-text: #8fb0f5;
+            }
         }
 
-        /* The app's own titles are set in Source Sans 3 Light, so the page
-           title matches that rather than using the heavy display cut. */
-        .hero h1 {
-            font-weight: 300;
-            letter-spacing: 0.005em;
+        /* No CSS smooth scrolling: ScrollTrigger sets the scroll position
+           itself when it re-measures, and would animate those jumps. The
+           in-page link scrolls smoothly from script instead. */
+        body { background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+        h1, h2, h3 { text-wrap: balance; }
+        ::selection { background: var(--accent); color: #10141c; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+        .site-nav {
+            background: color-mix(in srgb, var(--paper) 84%, transparent);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: .6rem;
+            padding: .95rem 1.4rem;
+            font-family: "Space Mono", ui-monospace, monospace;
+            font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+            border: 1.5px solid transparent;
+            transition: transform .25s, background-color .25s, color .25s, border-color .25s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--accent); color: #10141c; }
+        .btn-ghost { border-color: color-mix(in srgb, var(--ink) 35%, transparent); color: var(--ink); }
+        .btn-ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+        .btn svg { width: 15px; height: 15px; flex: none; }
+        .chip { border: 1px solid var(--line); padding: .45rem .8rem; }
+
+        /* ---------------- Hero: the Ethiopian clock ----------------
+           One turn is a whole day. Sunrise sits on the left, where the
+           Ethiopian day begins at 12:00; the day runs over the top to
+           sunset on the right, and the night under the bottom. */
+        .dial {
+            --ring: min(460px, 86vw);
+            position: relative; width: var(--ring); aspect-ratio: 1;
+            border-radius: 50%;
+            touch-action: pan-y;
+        }
+        .dial canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .dial-knob {
+            position: absolute; left: 0; top: 0;
+            width: 52px; height: 52px; margin: -26px 0 0 -26px;
+            border-radius: 50%;
+            touch-action: none; cursor: grab;
+        }
+        .dial-knob:active { cursor: grabbing; }
+        .dial-centre {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; pointer-events: none;
+        }
+        .dc-kicker { font-family: "Space Mono", monospace; font-size: max(9px, calc(var(--ring) * .021)); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+        .dc-time { font-weight: 300; font-size: calc(var(--ring) * .15); line-height: 1; letter-spacing: -.02em; margin-top: .12em; font-variant-numeric: tabular-nums; }
+        .dc-period { font-weight: 700; font-size: calc(var(--ring) * .034); margin-top: .35em; }
+        .dc-period.is-day { color: var(--accent-text); }
+        .dc-period.is-night { color: var(--night-text); }
+        .dc-std { font-size: calc(var(--ring) * .03); color: var(--ink-soft); margin-top: .25em; }
+        .dc-date { font-size: calc(var(--ring) * .027); color: var(--ink-soft); margin-top: .9em; }
+
+        /* ---------------- iPhone (shared with the other pages) ---------------- */
+        .iphone {
+            --w: 260px;
+            position: relative;
+            width: var(--w); height: calc(var(--w) * 2.1);
+            border-radius: calc(var(--w) * .165);
+            background: linear-gradient(145deg, #57544f 0%, #1f1e1c 36%, #2d2b29 64%, #5d5a55 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 255, 255, .22),
+                inset 0 0 0 calc(var(--w) * .007) #0c0c0c,
+                0 calc(var(--w) * .1) calc(var(--w) * .22) calc(var(--w) * -.06) rgba(0, 0, 0, .6);
+        }
+        .iphone__bezel { position: absolute; inset: calc(var(--w) * .014); border-radius: calc(var(--w) * .152); background: #050505; padding: calc(var(--w) * .026); }
+        .iphone__screen { position: relative; width: 100%; height: 100%; border-radius: calc(var(--w) * .128); overflow: hidden; background: #000; isolation: isolate; }
+        .iphone__screen > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+        .iphone__island { position: absolute; z-index: 5; top: calc(var(--w) * .024); left: 50%; width: calc(var(--w) * .29); height: calc(var(--w) * .08); transform: translateX(-50%); background: #000; border-radius: 999px; }
+
+        /* ---------------- Walkthrough ----------------
+           Without GSAP (or with reduced motion) the track is a native
+           swipeable strip. Once pinning is live, .is-pinned hides overflow
+           and scroll drives the track instead. */
+        .walkthrough { background: var(--stage); color: var(--stage-ink); }
+        .wt-track {
+            position: relative; z-index: 1;
+            display: flex; align-items: center;
+            overflow-x: auto; scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+        .wt-track::-webkit-scrollbar { display: none; }
+        .walkthrough.is-pinned .wt-track { overflow: visible; scroll-snap-type: none; will-change: transform; }
+        .wt-panel, .wt-intro { flex: 0 0 auto; scroll-snap-align: center; }
+        .wt-panel { perspective: 1400px; }
+        /* Phone width from the height left over. Stacked (phones, tablets):
+           nav 64 + progress row 56 + gap 24 + the longest caption ~180
+           + breathing room. Side by side (desktop): only the phone's own
+           height has to fit between the nav and the progress row. */
+        .wt-panel { --pw: min(250px, calc((100svh - 345px) / 2.1)); }
+        @media (min-width: 1024px) {
+            .wt-panel { --pw: min(250px, calc((100svh - 230px) / 2.1)); }
+        }
+        /* Phones held sideways: too short to stack, so sit the caption
+           beside the phone as on desktop. */
+        @media (orientation: landscape) and (max-height: 540px) and (max-width: 1023px) {
+            .wt-panel { --pw: calc((100svh - 150px) / 2.1); }
+            .wt-panel > div { flex-direction: row; align-items: center; }
+        }
+        .wt-panel .iphone { --w: var(--pw); }
+        .wt-phone { transform-style: preserve-3d; will-change: transform, opacity; }
+        .wt-soft { color: var(--stage-soft); }
+
+        /* A day passing behind the screens: the sun rises at 12:00, the way
+           the Ethiopian day begins, crosses the sky and sets by the last
+           screen. Every layer moves by transform or opacity only. */
+        .wt-sky { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .sky-day, .sky-dusk { position: absolute; inset: 0; will-change: opacity; }
+        .sky-day { background: linear-gradient(180deg, rgba(74, 110, 170, .38) 0%, rgba(52, 70, 104, .2) 55%, rgba(232, 181, 77, .08) 100%); opacity: .5; }
+        .sky-dusk { background: radial-gradient(120% 55% at 50% 100%, rgba(222, 128, 60, .42), rgba(222, 128, 60, .1) 45%, transparent 72%); opacity: .5; }
+        .sun {
+            position: absolute; left: 0; top: 0;
+            width: 64vmin; height: 64vmin; margin: -32vmin 0 0 -32vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 222, 140, .62) 0, rgba(240, 190, 90, .3) 12%, rgba(232, 181, 77, .1) 34%, transparent 62%);
+            transform: translate3d(50vw, 22vh, 0);
+            will-change: transform;
+        }
+        .sun::after {
+            content: ""; position: absolute; left: 50%; top: 50%;
+            width: 7vmin; height: 7vmin; margin: -3.5vmin 0 0 -3.5vmin; border-radius: 50%;
+            background: #ffdf8e; box-shadow: 0 0 30px 8px rgba(255, 214, 120, .55);
+            opacity: .85;
+        }
+        .clock-pill { border: 1px solid var(--stage-line); background: rgba(22, 27, 39, .6); border-radius: 99px; padding: .45rem .9rem; font-variant-numeric: tabular-nums; }
+
+        .wt-arrow {
+            display: grid; place-items: center;
+            width: 2.4rem; height: 2.4rem;
+            border: 1px solid var(--stage-line); border-radius: 999px;
+            color: var(--stage-ink); font-size: .95rem;
+            transition: border-color .25s, color .25s, opacity .25s;
+        }
+        .wt-arrow:hover { border-color: var(--accent); color: var(--accent); }
+        .wt-arrow:disabled { opacity: .3; pointer-events: none; }
+        /* Narrow static strip: the arrows need the room, and the label
+           already says which screen this is. */
+        @media (max-width: 639px) { .walkthrough.is-static .wt-bars { display: none; } }
+        .wt-bars span { height: 3px; flex: 1; background: var(--stage-line); transition: background-color .35s; }
+        .wt-bars span.is-on { background: var(--accent); }
+
+        /* ---------------- Date Tools ---------------- */
+        .tools {
+            background: var(--stage); color: var(--stage-ink);
+            border-radius: 28px;
+            border: 1px solid var(--stage-line);
+            box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .5);
+        }
+        .t-card { background: var(--card); border: 1px solid var(--stage-line); border-radius: 18px; }
+        .t-label { font-size: .66rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--stage-soft); }
+        .t-seg { display: flex; background: rgba(255, 255, 255, .06); border-radius: 99px; padding: 4px; gap: 4px; }
+        .t-seg button { flex: 1; padding: .6rem .5rem; border-radius: 99px; font-size: .9rem; color: var(--stage-soft); transition: background-color .25s, color .25s; }
+        .t-seg button[aria-pressed="true"] { background: rgba(255, 255, 255, .16); color: var(--stage-ink); font-weight: 600; }
+        .t-field {
+            background: rgba(255, 255, 255, .06); border: 1px solid var(--stage-line); border-radius: 12px;
+            color: var(--accent); font-weight: 600; font-size: 1.05rem;
+            padding: .6rem .75rem; color-scheme: dark;
+        }
+        .t-field:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+        .t-field option { color: #ece8df; background: #1f2533; }
+        .t-row { display: flex; justify-content: space-between; gap: 1rem; padding: .7rem 0; border-top: 1px solid var(--stage-line); }
+        .t-row:first-child { border-top: 0; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn:hover { transform: none; }
+            .t-seg button { transition: none; }
         }
     </style>
 </head>
-<body>
+<body class="font-sans">
 
-    <div class="scroll-progress" aria-hidden="true"><span></span></div>
-    <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
-
-    <nav class="site-nav">
-        <div class="wrap">
-            <a href="../../" class="nav-brand">Fueera<sup>®</sup></a>
-            <span class="nav-mid mono">Ethiopian Calendar / መጋቢት</span>
-            <a href="../../" class="nav-back mono">[ All apps ]</a>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="hero-grid">
-            <div class="hero-copy">
-                <img src="../../assets/icons/ethiopian-calendar-icon.png" alt="" class="hero-icon">
-                <h1 class="display" data-split>Ethiopian Calendar</h1>
-                <p class="hero-tagline">Your day at a glance — in Ethiopian time.</p>
-                <ul class="hero-meta mono">
-                    <li>iPhone</li>
-                    <li>Widgets</li>
-                    <li>Free</li>
-                </ul>
-                <div class="hero-actions">
-                    <a href="https://apps.apple.com/us/app/ethiopian-calendar-widgets/id6761394400" class="btn" data-magnetic="0.3">
-                        <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                        App Store
-                    </a>
-                    <a href="#features" class="btn btn-ghost" data-magnetic="0.25">Features</a>
-                </div>
-            </div>
-            <div class="hero-media">
-                <img src="../../assets/screenshots/ethiopian-calendar/hero.jpg" alt="Ethiopian Calendar &amp; Widgets shown in both light and dark themes" class="hero-shot" width="828" height="1632" data-parallax="0.06">
-            </div>
-        </div>
+    <!-- =========================== NAV =========================== -->
+    <header class="site-nav fixed inset-x-0 top-0 z-50">
+        <nav class="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-5 sm:px-8 lg:px-12" aria-label="Primary">
+            <a href="../../" class="text-[1.05rem] font-light uppercase tracking-[.42em]">Fueera</a>
+            <span class="hidden font-mono text-[.66rem] uppercase tracking-[.16em] text-ink-soft md:block">002 / Ethiopian Calendar</span>
+            <a href="../../" class="font-mono text-[.66rem] uppercase tracking-[.16em] hover:underline">[ All apps ]</a>
+        </nav>
     </header>
 
-    <div class="marquee" aria-hidden="true">
-        <div class="marquee-track">
-            <span>Ethiopian Calendar</span>
-            <span>Widgets for every screen</span>
-            <span>መጋቢት ፳፩</span>
-        </div>
-    </div>
-
     <main>
-        <section class="section" id="features">
-            <div class="section-head">
-                <span class="section-kicker mono">01 — What it does</span>
-                <h2 data-split>The Ethiopian calendar, done properly</h2>
-                <p class="lede" data-reveal>Ethiopian Calendar &amp; Widgets keeps the Ge'ez calendar, the Gregorian calendar, and Addis Ababa time side by side — so you always know today's date in whichever system you need it. Holidays come with context, reminders understand Ethiopian daylight and nighttime hours, and widgets put it all on your Home and Lock Screen.</p>
+        <!-- =========================== 01 HERO =========================== -->
+        <section class="mx-auto grid max-w-[1320px] items-center gap-12 px-5 pb-16 pt-28 sm:px-8 lg:min-h-[88svh] lg:grid-cols-12 lg:gap-6 lg:px-12 lg:pb-10">
+            <div class="lg:col-span-6">
+                <div class="mb-8 flex items-center gap-4">
+                    <img src="../../assets/icons/ethiopian-calendar-icon.png" alt="" class="h-12 w-12 rounded-[22%]">
+                    <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-ink-soft">Utilities · iPhone, iPad, Watch &amp; Mac</p>
+                </div>
+
+                <h1 class="leading-none">
+                    <span class="block text-[clamp(3rem,7.4vw,6rem)] font-light tracking-[-.025em]">Ethiopian Calendar <span class="text-accent-text">&amp;&nbsp;Widgets</span></span>
+                    <span class="mt-5 block font-ethi text-[clamp(1.1rem,2vw,1.5rem)] font-semibold text-ink-soft" lang="am">የኢትዮጵያ ቀን መቁጠሪያ</span>
+                </h1>
+
+                <p class="mt-9 max-w-[24ch] text-[clamp(1.45rem,2.6vw,2.15rem)] font-light leading-[1.18]">Your day at a glance — in Ethiopian time.</p>
+                <p class="mt-6 max-w-[54ch] text-[1.08rem] leading-relaxed text-ink-soft">
+                    The Ge'ez calendar for daily life: Ethiopian and Gregorian dates side by side, Addis Ababa time on the Ethiopian clock, and holidays that come with their history.
+                </p>
+
+                <div class="mt-9 flex flex-wrap gap-3">
+                    <a href="https://apps.apple.com/us/app/ethiopian-calendar-widgets/id6761394400" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                        App Store
+                    </a>
+                    <a href="#walkthrough" class="btn btn-ghost">Spend a day with it</a>
+                </div>
+
+                <ul class="mt-8 flex flex-wrap gap-2 font-mono text-[.62rem] uppercase tracking-[.14em] text-ink-soft">
+                    <li class="chip">Free</li>
+                    <li class="chip">Home &amp; Lock Screen widgets</li>
+                    <li class="chip">Apple Watch complications</li>
+                </ul>
             </div>
 
-            <ol class="features" data-stagger>
-                <li class="feature">
-                    <span class="feature-num">01</span>
-                    <h3>Your day at a glance</h3>
-                    <p>One screen shows the Ethiopian date, the Gregorian date, current Addis Ababa time with day/night status, and everything coming up.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">02</span>
-                    <h3>Reminders in Ethiopian time</h3>
-                    <p>Create events and reminders using the Ethiopian daylight and nighttime clock, or switch to standard AM/PM. Repeat them daily, weekly, or monthly.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">03</span>
-                    <h3>Holidays &amp; fun facts</h3>
-                    <p>National, religious, and cultural holidays — each with a short history and the facts behind it, in English and Amharic.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">04</span>
-                    <h3>Convert dates instantly</h3>
-                    <p>Move between Ethiopian and Gregorian dates in either direction, add or subtract days, and work out an exact age.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">05</span>
-                    <h3>Widgets for every screen</h3>
-                    <p>Home Screen and Lock Screen widgets in several sizes — from a compact date to a full month grid with upcoming holidays.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">06</span>
-                    <h3>Light, dark, or automatic</h3>
-                    <p>Pick the theme you prefer, or let it follow your device. Every screen and widget is designed for both.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">07</span>
-                    <h3>Switch calendars anytime</h3>
-                    <p>Flip the whole app between Ethiopian and Gregorian with a single toggle — month grids, day details, and events all follow.</p>
-                </li>
-                <li class="feature">
-                    <span class="feature-num">08</span>
-                    <h3>Sync and notifications</h3>
-                    <p>Import your Google, Apple, Outlook, or Yahoo calendars, and choose exactly which holiday categories are allowed to notify you.</p>
-                </li>
-            </ol>
-        </section>
-
-        <section class="section shots-section">
-            <div class="section-head">
-                <span class="section-kicker mono">02 — A closer look</span>
-                <h2 data-split>See it running</h2>
-            </div>
-            <div class="shots" data-drag>
-                <figure class="shot"><img src="../../assets/screenshots/ethiopian-calendar/today.jpg" alt="Today view showing the Ethiopian date Megabit 21, 2018, the Gregorian date, Addis Ababa time, and upcoming holidays" width="828" height="1792" loading="lazy"><figcaption>01 / Today</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/ethiopian-calendar/reminders.jpg" alt="Creating a new reminder using the Ethiopian daylight and nighttime clock" width="828" height="1792" loading="lazy"><figcaption>02 / Ethiopian time</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/ethiopian-calendar/holidays.jpg" alt="Holiday detail for Patriots' Day — Arbegnoch Qen with background and fun facts" width="828" height="1792" loading="lazy"><figcaption>03 / Holidays</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/ethiopian-calendar/converter.jpg" alt="Date Tools converting Meskerem 1, 2017 to September 11, 2024" width="828" height="1792" loading="lazy"><figcaption>04 / Date tools</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/ethiopian-calendar/widgets.jpg" alt="Home Screen widgets showing the Ethiopian month grid, current date, and upcoming holidays" width="828" height="1792" loading="lazy"><figcaption>05 / Widgets</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/ethiopian-calendar/dual-calendar.jpg" alt="Today view switched to show Miyazya 1, 2018 alongside April 9, 2026" width="828" height="1792" loading="lazy"><figcaption>06 / Dual calendar</figcaption></figure>
-                <figure class="shot"><img src="../../assets/screenshots/ethiopian-calendar/themes.jpg" alt="Settings shown side by side in dark mode and light mode" width="828" height="1792" loading="lazy"><figcaption>07 / Light &amp; dark</figcaption></figure>
+            <!-- The Ethiopian clock, live for Addis Ababa. Drag the sun (or
+                 the moon) to any time and it converts as you go. -->
+            <div class="flex flex-col items-center lg:col-span-6 lg:items-end">
+                <div class="flex flex-col items-center">
+                    <div class="dial" id="dial" tabindex="0" role="slider" aria-label="Ethiopian clock for Addis Ababa. Use the arrow keys to change the time.">
+                        <canvas aria-hidden="true"></canvas>
+                        <div class="dial-centre">
+                            <p class="dc-kicker" id="dc-kicker">Addis Ababa · now</p>
+                            <p class="dc-time" id="dc-time">–:––</p>
+                            <p class="dc-period" id="dc-period"></p>
+                            <p class="dc-std" id="dc-std"></p>
+                            <p class="dc-date" id="dc-date"></p>
+                        </div>
+                        <div class="dial-knob" id="dial-knob" aria-hidden="true"></div>
+                    </div>
+                    <div class="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[.6rem] uppercase tracking-[.14em] text-ink-soft">
+                        <span>Day starts at sunrise · 12:00</span>
+                        <button type="button" id="dial-now" class="text-accent-text underline-offset-4 hover:underline" hidden>&#8634; Back to now</button>
+                    </div>
+                    <p class="mt-2 text-center text-sm text-ink-soft"><span class="hidden sm:inline">Drag the sun, click the ring, or use the arrow keys</span><span class="sm:hidden">Drag the sun or tap the ring</span> to convert any time.</p>
+                </div>
             </div>
         </section>
 
-        <section class="cta-section">
-            <div class="wrap">
-                <h2 class="display" data-split>Get the calendar</h2>
-                <p>Free on the App Store for iPhone</p>
-                <a href="https://apps.apple.com/us/app/ethiopian-calendar-widgets/id6761394400" class="btn" data-magnetic="0.35">
-                    <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
-                    Download
+        <!-- =========================== 02 WALKTHROUGH =========================== -->
+        <section id="walkthrough" class="walkthrough relative h-[100svh] overflow-hidden" aria-labelledby="wt-title">
+            <div class="wt-sky" aria-hidden="true">
+                <div class="sky-day"></div>
+                <div class="sky-dusk"></div>
+                <div class="sun"></div>
+            </div>
+
+            <!-- Ethiopian time for the moment of the day the scroll has reached -->
+            <p class="clock-pill pointer-events-none absolute right-[6vw] top-20 z-[2] hidden font-mono text-[.62rem] uppercase tracking-[.14em]" data-motion aria-hidden="true">
+                <span class="text-accent" id="sky-eth">12:00</span> <span class="font-ethi normal-case tracking-normal" id="sky-period">ቀን</span> <span class="wt-soft">· <span id="sky-std">6:00 AM</span></span>
+            </p>
+
+            <!-- Vertical padding keeps the screens clear of the fixed nav
+                 above and the progress row below. -->
+            <div class="wt-track h-full gap-[6vw] px-[6vw] pb-14 pt-16 lg:gap-[4vw]">
+
+                <div class="wt-intro w-[82vw] sm:w-[60vw] lg:w-[34vw]">
+                    <p class="mb-6 font-mono text-[.68rem] uppercase tracking-[.18em] text-accent">02 — A closer look</p>
+                    <h2 id="wt-title" class="text-[clamp(2.1rem,4.2vw,3.6rem)] font-light leading-[1.04] tracking-[-.02em]">A day in Ethiopian time.</h2>
+                    <p class="wt-soft mt-6 max-w-[40ch] text-[1.08rem] leading-relaxed">
+                        <span data-motion>Keep scrolling. The sun rises at 12:00, the way the Ethiopian day begins.</span>
+                        <span data-static class="hidden">Swipe, or use the arrows below, to see all five screens.</span>
+                    </p>
+                </div>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Today">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/ethio-today.jpg" alt="Today screen: Megabit 21, 2018 in Ethiopian and Amharic, Monday March 30, 2026, Addis Ababa at 2:30 AM nighttime, and the holidays coming up" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">01 · Today</p>
+                            <h3 class="mt-3 text-xl font-semibold leading-tight lg:text-2xl">Your day at a glance.</h3>
+                            <p class="wt-soft mt-3 text-[.98rem] leading-relaxed lg:text-[1.05rem]">Both dates, Addis Ababa time with day or night, and every holiday coming up.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Ethiopian time">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/ethio-time.jpg" alt="New Reminder: April 9, 2026 (Miyazya 1, 2018) at 2:55 in the day, Ethiopian time, which is 8:55 AM" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">02 · Reminders</p>
+                            <h3 class="mt-3 text-xl font-semibold leading-tight lg:text-2xl">Set it in Ethiopian time.</h3>
+                            <p class="wt-soft mt-3 text-[.98rem] leading-relaxed lg:text-[1.05rem]">Pick a time on the Ethiopian clock, day or night, or in AM/PM. Repeat it daily, weekly or monthly.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Holidays">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/ethio-holiday.jpg" alt="Holiday detail for Patriots' Day — Arbegnoch Qen, an official public holiday, with its history and three fun facts" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">03 · Holidays</p>
+                            <h3 class="mt-3 text-xl font-semibold leading-tight lg:text-2xl">Every holiday, with its story.</h3>
+                            <p class="wt-soft mt-3 text-[.98rem] leading-relaxed lg:text-[1.05rem]">National, religious and cultural holidays, each with a short history and a few facts worth knowing.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Date Tools">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/ethio-convert.jpg" alt="Date Tools converting Meskerem 1, 2017 to September 11, 2024, a Wednesday, not a leap year" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">04 · Date Tools</p>
+                            <h3 class="mt-3 text-xl font-semibold leading-tight lg:text-2xl">Convert in a tap.</h3>
+                            <p class="wt-soft mt-3 text-[.98rem] leading-relaxed lg:text-[1.05rem]">Ethiopian to Gregorian and back, adding or subtracting days, and working out an exact age.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="wt-panel w-[82vw] sm:w-[60vw] lg:w-[46vw]" data-name="Widgets">
+                    <div class="flex flex-col items-center gap-6 lg:flex-row lg:items-end lg:gap-10">
+                        <div class="wt-phone"><div class="iphone"><div class="iphone__bezel"><div class="iphone__screen">
+                            <img src="../../assets/screens/ethio-widgets.jpg" alt="Home Screen widgets: a Megabit month grid, today's date with Addis Ababa time, and a large widget with upcoming holidays" decoding="async"><div class="iphone__island"></div>
+                        </div></div></div></div>
+                        <div class="max-w-[30ch] lg:pb-6">
+                            <p class="font-mono text-[.66rem] uppercase tracking-[.16em] text-accent">05 · Widgets</p>
+                            <h3 class="mt-3 text-xl font-semibold leading-tight lg:text-2xl">Widgets for every screen.</h3>
+                            <p class="wt-soft mt-3 text-[.98rem] leading-relaxed lg:text-[1.05rem]">A month grid, today with Addis time, and the holidays ahead — on the Home Screen, Lock Screen and Apple Watch.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Trailing room so the last screen can reach the centre:
+                     half the viewport, minus half a panel, minus the padding. -->
+                <div class="w-[3vw] flex-none sm:w-[14vw] lg:w-[21vw]" aria-hidden="true"></div>
+            </div>
+
+            <!-- Progress: which screen is centred, and how far along the day -->
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 z-[2] px-[6vw] pb-7">
+                <div class="flex items-center justify-between gap-6 font-mono text-[.62rem] uppercase tracking-[.16em]">
+                    <p class="wt-soft whitespace-nowrap"><span id="wt-index" class="text-accent">00</span> / 05 · <span id="wt-name">A closer look</span></p>
+                    <div class="flex items-center gap-4">
+                        <!-- Shown only on the static strip, where there's no
+                             scroll-driven motion to move the screens. -->
+                        <div class="wt-arrows pointer-events-auto hidden gap-2">
+                            <button type="button" class="wt-arrow" data-dir="-1" aria-label="Previous screen">&larr;</button>
+                            <button type="button" class="wt-arrow" data-dir="1" aria-label="Next screen">&rarr;</button>
+                        </div>
+                        <div class="wt-bars flex w-[26vw] max-w-[360px] gap-1.5 sm:w-[42vw]" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================== 03 DATE TOOLS =========================== -->
+        <section id="tools" class="mx-auto grid max-w-[1320px] items-center gap-14 px-5 py-28 sm:px-8 lg:grid-cols-12 lg:gap-10 lg:px-12 lg:py-36" aria-labelledby="tools-title">
+            <div class="lg:col-span-5">
+                <p class="mb-6 font-mono text-[.68rem] uppercase tracking-[.18em] text-accent-text">03 — Date Tools</p>
+                <h2 id="tools-title" class="text-[clamp(2.2rem,4.4vw,3.8rem)] font-light leading-[1.04] tracking-[-.02em]">Any date, in both calendars.</h2>
+                <p class="mt-6 max-w-[46ch] text-[1.08rem] leading-relaxed text-ink-soft">
+                    Convert in either direction, the way the app's Date Tools do. Try a birthday, an anniversary, or the next holiday.
+                </p>
+                <p class="mt-8 max-w-[46ch] text-sm leading-relaxed text-ink-soft">
+                    Holidays shown here are the fixed and Easter-based ones. Islamic holidays follow the moon; the app has those too.
+                </p>
+            </div>
+
+            <div class="flex justify-center lg:col-span-7">
+                <div class="tools w-full max-w-[440px] p-5 sm:p-6">
+                    <div class="flex items-center justify-between">
+                        <p class="text-lg font-semibold">Date Tools</p>
+                        <button type="button" id="t-today" class="rounded-full border px-3 py-1 font-mono text-[.6rem] uppercase tracking-[.14em] wt-soft" style="border-color: var(--stage-line)">Today</button>
+                    </div>
+
+                    <div class="t-seg mt-5" role="group" aria-label="Conversion direction">
+                        <button type="button" data-dir="g2e" aria-pressed="true">Gregorian &rarr; Ethiopian</button>
+                        <button type="button" data-dir="e2g" aria-pressed="false">Ethiopian &rarr; Gregorian</button>
+                    </div>
+
+                    <div class="t-card mt-4 p-4">
+                        <p class="t-label">Input date</p>
+                        <div class="mt-3" id="in-g2e">
+                            <label class="sr-only" for="g-date">Gregorian date</label>
+                            <input type="date" id="g-date" class="t-field w-full" min="1901-01-01" max="2099-12-31">
+                        </div>
+                        <div class="mt-3 hidden grid-cols-[1fr_auto_auto] gap-2" id="in-e2g">
+                            <label class="sr-only" for="e-month">Ethiopian month</label>
+                            <select id="e-month" class="t-field"></select>
+                            <label class="sr-only" for="e-day">Day</label>
+                            <select id="e-day" class="t-field"></select>
+                            <label class="sr-only" for="e-year">Year</label>
+                            <input type="number" id="e-year" class="t-field w-[5.2rem]" min="1894" max="2091" inputmode="numeric">
+                        </div>
+                        <p class="mt-2 hidden text-sm text-[#f08a8a]" id="t-error" role="alert"></p>
+                    </div>
+
+                    <div class="t-card mt-4 p-4" aria-live="polite">
+                        <p class="t-label">Result</p>
+                        <div class="mt-2">
+                            <div class="t-row">
+                                <span class="t-label pt-1">Ethiopian</span>
+                                <span class="text-right"><span class="block font-semibold" id="r-eth"></span><span class="block font-ethi text-sm text-accent" id="r-eth-am" lang="am"></span></span>
+                            </div>
+                            <div class="t-row">
+                                <span class="t-label pt-1">Gregorian</span>
+                                <span class="text-right font-semibold" id="r-greg"></span>
+                            </div>
+                            <div class="t-row">
+                                <span class="t-label pt-1">Day</span>
+                                <span class="text-right"><span class="block" id="r-day"></span><span class="block font-ethi text-sm wt-soft" id="r-day-am" lang="am"></span></span>
+                            </div>
+                            <div class="t-row">
+                                <span class="t-label pt-1">From today</span>
+                                <span class="text-right" id="r-diff"></span>
+                            </div>
+                            <div class="t-row">
+                                <span class="t-label pt-1">Ethiopian year</span>
+                                <span class="text-right"><span class="block" id="r-doy"></span><span class="block text-sm wt-soft" id="r-leap"></span></span>
+                            </div>
+                            <div class="t-row" id="r-holiday-row" hidden>
+                                <span class="t-label pt-1">Holiday</span>
+                                <span class="text-right"><span class="block font-semibold text-accent" id="r-holiday"></span><span class="block font-ethi text-sm wt-soft" id="r-holiday-am" lang="am"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================== CTA =========================== -->
+        <section class="border-t" style="border-color: var(--line)">
+            <div class="mx-auto flex max-w-[1320px] flex-col items-start justify-between gap-8 px-5 py-24 sm:px-8 lg:flex-row lg:items-end lg:px-12">
+                <div>
+                    <h2 class="text-[clamp(2.2rem,5vw,4.2rem)] font-light leading-[1.04] tracking-[-.02em]">The Ethiopian calendar, always at a glance.</h2>
+                    <p class="mt-5 max-w-[52ch] text-ink-soft">Free on the App Store for iPhone, iPad, Apple Watch and Mac.</p>
+                </div>
+                <a href="https://apps.apple.com/us/app/ethiopian-calendar-widgets/id6761394400" class="btn btn-primary flex-none">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.9-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.2.9-1.3 1.3-2.5 1.3-2.6 0 0-2.5-1-2.5-3.5zM14.3 5.1c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z"/></svg>
+                    Get the calendar
                 </a>
             </div>
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="wrap">
-            <span class="mono">&copy; 2026 Fueera LLC</span>
-            <nav class="footer-links mono">
-                <a href="../../">All apps</a>
-                <a href="mailto:support@fueera.com">Support</a>
-                <a href="../../privacy-policy/">Privacy</a>
+    <footer class="border-t" style="border-color: var(--line)">
+        <div class="mx-auto flex max-w-[1320px] flex-wrap items-baseline justify-between gap-6 px-5 py-10 font-mono text-[.64rem] uppercase tracking-[.14em] sm:px-8 lg:px-12">
+            <span class="text-ink-soft">&copy; 2026 Fueera LLC</span>
+            <nav class="flex flex-wrap gap-x-8 gap-y-3" aria-label="Footer">
+                <a href="../../" class="hover:underline">All apps</a>
+                <a href="mailto:support@fueera.com" class="hover:underline">Support</a>
+                <a href="../../privacy-policy/" class="hover:underline">Privacy Policy</a>
             </nav>
         </div>
     </footer>
 
-    <script src="../../assets/js/motion.js?v=2" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* ==================================================================
+           Calendar and clock
+           Ethiopian dates use the fixed-date algorithm of Dershowitz &
+           Reingold (Amete Mihret epoch JDN 1724221). Fasika follows the
+           Julian computus, the same date as Eastern Orthodox Easter.
+           Ethiopian time counts the hours from sunrise: 6:00 AM is 12:00 in
+           the day (ቀን), 6:00 PM is 12:00 at night (ሌሊት). Addis Ababa is
+           UTC+3 all year.
+           ================================================================== */
+        var CAL = (function () {
+            var EPOCH = 1724221;
+            var MONTHS = ['Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit', 'Megabit', 'Miyazya', 'Ginbot', 'Sene', 'Hamle', 'Nehase', 'Pagume'];
+            var MONTHS_AM = ['መስከረም', 'ጥቅምት', 'ኅዳር', 'ታኅሣሥ', 'ጥር', 'የካቲት', 'መጋቢት', 'ሚያዝያ', 'ግንቦት', 'ሰኔ', 'ሐምሌ', 'ነሐሴ', 'ጳጉሜን'];
+            var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            var DAYS_AM = ['እሑድ', 'ሰኞ', 'ማክሰኞ', 'ረቡዕ', 'ሐሙስ', 'ዓርብ', 'ቅዳሜ'];
+            var GMONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+            function jdnFromGreg(y, m, d) { return Math.floor(Date.UTC(y, m - 1, d) / 86400000) + 2440588; }
+            function gregFromJdn(j) {
+                var t = new Date((j - 2440588) * 86400000);
+                return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), wd: t.getUTCDay() };
+            }
+            function jdnFromEth(y, m, d) { return EPOCH - 1 + 365 * (y - 1) + Math.floor(y / 4) + 30 * (m - 1) + d; }
+            function ethFromJdn(j) {
+                var y = Math.floor((4 * (j - EPOCH) + 1463) / 1461);
+                var start = jdnFromEth(y, 1, 1);
+                var m = Math.floor((j - start) / 30) + 1;
+                return { y: y, m: m, d: j - start - (m - 1) * 30 + 1 };
+            }
+            function todayJdn() { var n = new Date(); return jdnFromGreg(n.getFullYear(), n.getMonth() + 1, n.getDate()); }
+            function isLeap(y) { return y % 4 === 3; }            // Pagume gets a sixth day
+
+            function fasika(gYear) {
+                var a = gYear % 4, b = gYear % 7, c = gYear % 19;
+                var d = (19 * c + 15) % 30;
+                var e = (2 * a + 4 * b - d + 34) % 7;
+                return jdnFromGreg(gYear, Math.floor((d + e + 114) / 31), ((d + e + 114) % 31) + 1) + 13;
+            }
+
+            // Fixed and Easter-based holidays of Ethiopian year Y.
+            var cache = {};
+            function holidays(Y) {
+                if (cache[Y]) return cache[Y];
+                var F = fasika(Y + 8), list = {};
+                [
+                    [jdnFromEth(Y, 1, 1), 'Ethiopian New Year — Enkutatash', 'እንቁጣጣሽ'],
+                    [jdnFromEth(Y, 1, 17), 'Finding of the True Cross — Meskel', 'መስቀል'],
+                    [jdnFromGreg(Y + 8, 1, 7), 'Christmas — Gena', 'ገና'],
+                    [jdnFromEth(Y, 5, 11), 'Epiphany — Timket', 'ጥምቀት'],
+                    [jdnFromEth(Y, 6, 23), 'Adwa Victory Day', 'የዓድዋ ድል በዓል'],
+                    [F - 2, 'Good Friday — Siklet', 'ስቅለት'],
+                    [F, 'Easter — Fasika', 'ፋሲካ'],
+                    [jdnFromGreg(Y + 8, 5, 1), "International Workers' Day", 'የሰራተኞች ቀን'],
+                    [jdnFromEth(Y, 8, 27), "Patriots' Day — Arbegnoch Qen", 'የአርበኞች ቀን'],
+                    [jdnFromEth(Y, 9, 20), 'Downfall of the Derg — Ginbot 20', 'የደርግ ውድቀት']
+                ].forEach(function (h) { list[h[0]] = { en: h[1], am: h[2] }; });
+                return (cache[Y] = list);
+            }
+
+            // Minutes past midnight → Ethiopian time.
+            function ethTime(min) {
+                var H = Math.floor(min / 60), M = min % 60;
+                var day = H >= 6 && H < 18;
+                return { h: ((H + 6) % 12) || 12, m: M, day: day, text: (((H + 6) % 12) || 12) + ':' + (M < 10 ? '0' : '') + M };
+            }
+            function stdTime(min) {
+                var H = Math.floor(min / 60), M = min % 60;
+                return ((H % 12) || 12) + ':' + (M < 10 ? '0' : '') + M + (H < 12 ? ' AM' : ' PM');
+            }
+            // Addis Ababa's clock and calendar day, whatever the visitor's zone.
+            function addisNow() {
+                var t = new Date(Date.now() + 3 * 3600000);
+                return {
+                    min: t.getUTCHours() * 60 + t.getUTCMinutes(),
+                    jdn: jdnFromGreg(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate())
+                };
+            }
+
+            return { MONTHS: MONTHS, MONTHS_AM: MONTHS_AM, DAYS: DAYS, DAYS_AM: DAYS_AM, GMONTHS: GMONTHS,
+                jdnFromGreg: jdnFromGreg, gregFromJdn: gregFromJdn, jdnFromEth: jdnFromEth, ethFromJdn: ethFromJdn,
+                todayJdn: todayJdn, isLeap: isLeap, holidays: holidays, ethTime: ethTime, stdTime: stdTime, addisNow: addisNow };
+        })();
+
+        /* ==================================================================
+           01 — The Ethiopian clock
+           The face (ring, hour numbers, labels) is drawn once to an
+           offscreen canvas; each frame composites it and adds the sun or
+           moon. It rises from sunrise to the current Addis time on load.
+           ================================================================== */
+        (function dial() {
+            var wrap = document.getElementById('dial');
+            var canvas = wrap.querySelector('canvas');
+            var ctx = canvas.getContext('2d');
+            var layer = document.createElement('canvas');
+            var lctx = layer.getContext('2d');
+            var knob = document.getElementById('dial-knob');
+            var nowBtn = document.getElementById('dial-now');
+            var out = {
+                kicker: document.getElementById('dc-kicker'), time: document.getElementById('dc-time'),
+                period: document.getElementById('dc-period'), std: document.getElementById('dc-std'),
+                date: document.getElementById('dc-date')
+            };
+            var TAU = Math.PI * 2;
+            var S = 0, R = 0, dpr = 1, col = {};
+            var picked = null;                      // minutes chosen by the visitor, or null for "now"
+            var shown = 0;                          // minutes the sun currently sits at
+            var rise = reduced ? 1 : 0, riseStart = 0, RISE_MS = 1600, riseFrom = 360;
+            var running = false, visible = true, dragging = false;
+            var t0 = performance.now();
+
+            // Sunrise on the left, noon at the top, sunset on the right.
+            function angle(min) { return Math.PI + ((min - 360) / 1440) * TAU; }
+            function minutesAt(a) {
+                var m = 360 + (((a - Math.PI) % TAU + TAU) % TAU) / TAU * 1440;
+                return Math.round(m / 5) * 5 % 1440;
+            }
+
+            function hex(v, fb) {
+                var m = (v || '').trim().match(/^#([0-9a-f]{6})$/i);
+                return m ? [0, 2, 4].map(function (i) { return parseInt(m[1].substr(i, 2), 16); }) : fb;
+            }
+            function rgba(c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+            function readColours() {
+                var cs = getComputedStyle(document.documentElement);
+                col.ink = hex(cs.getPropertyValue('--ink'), [32, 36, 46]);
+                col.soft = hex(cs.getPropertyValue('--ink-soft'), [90, 96, 108]);
+                col.gold = hex(cs.getPropertyValue('--accent'), [232, 181, 77]);
+                col.goldText = hex(cs.getPropertyValue('--accent-text'), [133, 96, 15]);
+                col.night = hex(cs.getPropertyValue('--night'), [91, 141, 239]);
+                col.nightText = hex(cs.getPropertyValue('--night-text'), [47, 95, 196]);
+            }
+
+            function size() {
+                dpr = Math.min(2, window.devicePixelRatio || 1);
+                S = canvas.getBoundingClientRect().width;
+                [canvas, layer].forEach(function (c) { c.width = c.height = Math.round(S * dpr); });
+                R = S * 0.36;
+            }
+
+            function drawFace() {
+                var c = lctx, cx = S / 2;
+                c.setTransform(dpr, 0, 0, dpr, 0, 0);
+                c.clearRect(0, 0, S, S);
+
+                // The ring: gold through the day, deepening to blue at night.
+                var g;
+                if (c.createConicGradient) {
+                    g = c.createConicGradient(Math.PI, cx, cx);
+                    g.addColorStop(0, rgba([222, 138, 58], 1));
+                    g.addColorStop(0.25, rgba(col.gold, 1));
+                    g.addColorStop(0.5, rgba([222, 138, 58], 1));
+                    g.addColorStop(0.5001, rgba(col.night, 0.75));
+                    g.addColorStop(0.75, rgba([36, 58, 110], 0.95));
+                    g.addColorStop(0.9999, rgba(col.night, 0.75));
+                    g.addColorStop(1, rgba([222, 138, 58], 1));
+                } else {
+                    g = rgba(col.gold, 1);
+                }
+                c.beginPath(); c.arc(cx, cx, R, 0, TAU);
+                c.strokeStyle = g; c.lineWidth = R * 0.07; c.stroke();
+
+                // The horizon: short marks where the day starts and ends.
+                c.strokeStyle = rgba(col.soft, 0.45); c.lineWidth = 1;
+                c.setLineDash([3, 4]);
+                c.beginPath();
+                c.moveTo(cx - R * 1.34, cx); c.lineTo(cx - R * 1.08, cx);
+                c.moveTo(cx + R * 1.08, cx); c.lineTo(cx + R * 1.34, cx);
+                c.stroke();
+                c.setLineDash([]);
+
+                // Hour ticks outside the ring, one per hour.
+                for (var H = 0; H < 24; H++) {
+                    var a = angle(H * 60), major = H % 6 === 0;
+                    var r1 = R * 1.07, r2 = R * (major ? 1.16 : 1.11);
+                    c.beginPath();
+                    c.moveTo(cx + r1 * Math.cos(a), cx + r1 * Math.sin(a));
+                    c.lineTo(cx + r2 * Math.cos(a), cx + r2 * Math.sin(a));
+                    c.strokeStyle = rgba(col.soft, major ? 0.7 : 0.35); c.lineWidth = major ? 1.6 : 1; c.stroke();
+                }
+
+                // Ethiopian hour numbers just inside the ring: 1-12 for the
+                // day across the top, 1-12 for the night along the bottom.
+                c.textAlign = 'center'; c.textBaseline = 'middle';
+                c.font = '600 ' + Math.max(10, S * 0.03) + 'px "Source Sans 3", sans-serif';
+                for (H = 0; H < 24; H++) {
+                    var n = ((H + 6) % 12) || 12, day = H >= 6 && H < 18;
+                    var b = angle(H * 60);
+                    c.fillStyle = rgba(day ? col.goldText : col.nightText, n === 12 || n === 6 ? 1 : 0.72);
+                    c.fillText(String(n), cx + R * 0.8 * Math.cos(b), cx + R * 0.8 * Math.sin(b));
+                }
+
+                // Standard-time landmarks outside.
+                c.font = '400 ' + Math.max(9, S * 0.022) + 'px "Space Mono", monospace';
+                c.fillStyle = rgba(col.soft, 0.95);
+                [[360, '6 AM'], [720, 'NOON'], [1080, '6 PM'], [0, 'MIDNIGHT']].forEach(function (l) {
+                    var a = angle(l[0]), r = R * 1.27;
+                    var x = cx + r * Math.cos(a), y = cx + r * Math.sin(a);
+                    if (l[0] === 360) { c.textAlign = 'right'; x += R * 0.12; y -= S * 0.03; }
+                    else if (l[0] === 1080) { c.textAlign = 'left'; x -= R * 0.12; y -= S * 0.03; }
+                    else c.textAlign = 'center';
+                    c.fillText(l[1], x, y);
+                });
+                c.textAlign = 'center';
+            }
+
+            function drawSun(x, y, r, day, now) {
+                ctx.save();
+                if (day) {
+                    var pulse = reduced ? 0 : 0.5 + 0.5 * Math.sin((now - t0) / 700);
+                    ctx.shadowColor = rgba([255, 200, 90], 0.9); ctx.shadowBlur = 18 + pulse * 10;
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = '#ffd36b'; ctx.fill();
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = '#ffd36b'; ctx.lineWidth = Math.max(1.5, r * 0.18); ctx.lineCap = 'round';
+                    for (var k = 0; k < 8; k++) {
+                        var a = k / 8 * TAU + (reduced ? 0 : (now - t0) / 9000);
+                        ctx.beginPath();
+                        ctx.moveTo(x + r * 1.45 * Math.cos(a), y + r * 1.45 * Math.sin(a));
+                        ctx.lineTo(x + r * 1.95 * Math.cos(a), y + r * 1.95 * Math.sin(a));
+                        ctx.stroke();
+                    }
+                } else {
+                    // A crescent: the moon's disc, clipped to everything
+                    // outside a second, offset disc (so the ring shows through).
+                    ctx.beginPath();
+                    ctx.rect(x - r * 4, y - r * 4, r * 8, r * 8);
+                    ctx.arc(x + r * 0.55, y - r * 0.35, r * 0.95, 0, TAU);
+                    ctx.clip('evenodd');
+                    ctx.shadowColor = rgba(col.night, 0.9); ctx.shadowBlur = 20;
+                    ctx.beginPath(); ctx.arc(x, y, r * 1.1, 0, TAU); ctx.fillStyle = '#dfe8ff'; ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            function frame(now) {
+                var cx = S / 2;
+                var target = picked === null ? CAL.addisNow().min : picked;
+                if (rise < 1) {
+                    var p = Math.min(1, (now - riseStart) / RISE_MS);
+                    rise = 1 - Math.pow(1 - p, 3);
+                    var span = ((target - riseFrom) % 1440 + 1440) % 1440;
+                    shown = (riseFrom + span * rise) % 1440;
+                } else {
+                    shown = target;
+                }
+
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(layer, 0, 0);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                var a = angle(shown);
+                var x = cx + R * Math.cos(a), y = cx + R * Math.sin(a);
+                drawSun(x, y, R * 0.075, shown >= 360 && shown < 1080, now);
+                knob.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+                if (running) requestAnimationFrame(frame);
+            }
+
+            function setRunning(on) {
+                var was = running;
+                running = on && !reduced;
+                if (running && !was) requestAnimationFrame(frame);
+            }
+            function paint() { if (!running) frame(performance.now()); }
+
+            function describe() {
+                var now = CAL.addisNow();
+                var min = picked === null ? now.min : picked;
+                var et = CAL.ethTime(min), std = CAL.stdTime(min);
+                var e = CAL.ethFromJdn(now.jdn);
+                out.kicker.textContent = picked === null ? 'Addis Ababa · now' : 'Ethiopian time';
+                out.time.textContent = et.text;
+                out.period.textContent = et.day ? 'ቀን · Day' : 'ሌሊት · Night';
+                out.period.className = 'dc-period ' + (et.day ? 'is-day' : 'is-night');
+                out.std.textContent = std + ' standard';
+                out.date.textContent = picked === null ? CAL.MONTHS[e.m - 1] + ' ' + e.d + ', ' + e.y + ' · ' + CAL.MONTHS_AM[e.m - 1] + ' ' + e.d : '';
+                wrap.setAttribute('aria-valuenow', String(min));
+                wrap.setAttribute('aria-valuetext', et.text + ' in the ' + (et.day ? 'day' : 'night') + ', Ethiopian time — ' + std + (picked === null ? ', now in Addis Ababa' : ''));
+                nowBtn.hidden = picked === null;
+            }
+
+            function pick(min) {
+                picked = ((min % 1440) + 1440) % 1440;
+                rise = 1;
+                describe(); paint();
+            }
+            function backToNow() { picked = null; describe(); paint(); }
+
+            function pointerMinutes(e) {
+                var r = canvas.getBoundingClientRect();
+                var dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+                return { min: minutesAt(Math.atan2(dy, dx)), dist: Math.hypot(dx, dy) / r.width * S };
+            }
+
+            wrap.setAttribute('aria-valuemin', '0');
+            wrap.setAttribute('aria-valuemax', '1435');
+            readColours(); size(); drawFace(); describe();
+
+            // Drag the sun (any pointer), or press on the ring (mouse, or a
+            // tap on touch) to jump there. Touch drags anywhere else on the
+            // dial still scroll the page.
+            function startDrag(e) {
+                dragging = true;
+                // Capture can fail if the pointer lifted in the same instant.
+                try { wrap.setPointerCapture(e.pointerId); } catch (err) { /* drag still follows pointermove */ }
+                pick(pointerMinutes(e).min);
+                e.preventDefault();
+            }
+            knob.addEventListener('pointerdown', startDrag);
+            wrap.addEventListener('pointerdown', function (e) {
+                if (e.target === knob) return;
+                var p = pointerMinutes(e);
+                if (p.dist < R * 0.62 || p.dist > R * 1.4) return;
+                if (e.pointerType === 'mouse') startDrag(e); else pick(p.min);
+            });
+            wrap.addEventListener('pointermove', function (e) { if (dragging) pick(pointerMinutes(e).min); });
+            ['pointerup', 'pointercancel'].forEach(function (t) { wrap.addEventListener(t, function () { dragging = false; }); });
+            wrap.addEventListener('keydown', function (e) {
+                var base = picked === null ? CAL.addisNow().min : picked;
+                var step = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5, PageUp: 60, PageDown: -60 }[e.key];
+                if (step) pick(Math.round(base / 5) * 5 + step);
+                else if (e.key === 'Home' || e.key === 'Escape') backToNow();
+                else return;
+                e.preventDefault();
+            });
+            nowBtn.addEventListener('click', backToNow);
+
+            // Keep "now" current.
+            setInterval(function () { if (picked === null) { describe(); paint(); } }, 15000);
+
+            window.addEventListener('resize', function () { size(); drawFace(); paint(); });
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { readColours(); drawFace(); paint(); });
+            if (document.fonts) document.fonts.ready.then(function () { drawFace(); paint(); });
+
+            if (reduced) { paint(); return; }
+            riseStart = performance.now();
+            new IntersectionObserver(function (entries) {
+                visible = entries[0].isIntersecting;
+                setRunning(visible);
+            }).observe(canvas);
+            paint();
+        })();
+
+        /* ==================================================================
+           03 — Date Tools: convert either way, with the weekday, the gap to
+           today, the day of the Ethiopian year, and any holiday.
+           ================================================================== */
+        (function tools() {
+            var dir = 'g2e', jdn = CAL.todayJdn();
+            var $ = function (id) { return document.getElementById(id); };
+            var gDate = $('g-date'), eMonth = $('e-month'), eDay = $('e-day'), eYear = $('e-year'), err = $('t-error');
+            var dirBtns = Array.prototype.slice.call(document.querySelectorAll('.t-seg button'));
+
+            CAL.MONTHS.forEach(function (m, i) {
+                var o = document.createElement('option');
+                o.value = String(i + 1); o.textContent = m + ' · ' + CAL.MONTHS_AM[i];
+                eMonth.appendChild(o);
+            });
+
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+            function fillDays(max, keep) {
+                if (eDay.options.length !== max) {
+                    eDay.innerHTML = '';
+                    for (var d = 1; d <= max; d++) { var o = document.createElement('option'); o.value = o.textContent = String(d); eDay.appendChild(o); }
+                }
+                eDay.value = String(Math.min(keep, max));
+            }
+            function syncInputs() {
+                var g = CAL.gregFromJdn(jdn), e = CAL.ethFromJdn(jdn);
+                gDate.value = g.y + '-' + pad(g.m) + '-' + pad(g.d);
+                eMonth.value = String(e.m);
+                eYear.value = String(e.y);
+                fillDays(e.m === 13 ? (CAL.isLeap(e.y) ? 6 : 5) : 30, e.d);
+            }
+
+            function show() {
+                var e = CAL.ethFromJdn(jdn), g = CAL.gregFromJdn(jdn);
+                var diff = jdn - CAL.todayJdn();
+                var start = CAL.jdnFromEth(e.y, 1, 1);
+                var hol = CAL.holidays(e.y)[jdn];
+                $('r-eth').textContent = CAL.MONTHS[e.m - 1] + ' ' + e.d + ', ' + e.y;
+                $('r-eth-am').textContent = CAL.MONTHS_AM[e.m - 1] + ' ' + e.d + ', ' + e.y;
+                $('r-greg').textContent = CAL.GMONTHS[g.m - 1] + ' ' + g.d + ', ' + g.y;
+                $('r-day').textContent = CAL.DAYS[g.wd];
+                $('r-day-am').textContent = CAL.DAYS_AM[g.wd];
+                $('r-diff').textContent = diff === 0 ? 'Today' : diff > 0 ? 'In ' + diff.toLocaleString('en-US') + (diff === 1 ? ' day' : ' days')
+                    : (-diff).toLocaleString('en-US') + (diff === -1 ? ' day ago' : ' days ago');
+                $('r-doy').textContent = 'Day ' + (jdn - start + 1) + ' of ' + e.y;
+                $('r-leap').textContent = CAL.isLeap(e.y) ? 'Leap year — Pagume has 6 days' : 'Not a leap year';
+                $('r-holiday-row').hidden = !hol;
+                if (hol) { $('r-holiday').textContent = hol.en; $('r-holiday-am').textContent = hol.am; }
+            }
+
+            function fail(msg) { err.textContent = msg; err.classList.remove('hidden'); }
+            function ok() { err.textContent = ''; err.classList.add('hidden'); }
+
+            gDate.addEventListener('input', function () {
+                var p = gDate.value.split('-').map(Number);
+                if (p.length !== 3 || !p[0] || p[0] < 1901 || p[0] > 2099) return fail('Pick a date between 1901 and 2099.');
+                ok(); jdn = CAL.jdnFromGreg(p[0], p[1], p[2]); show();
+            });
+            function fromEthiopian() {
+                var y = parseInt(eYear.value, 10), m = Number(eMonth.value);
+                if (!(y >= 1894 && y <= 2091)) return fail('Enter an Ethiopian year between 1894 and 2091.');
+                fillDays(m === 13 ? (CAL.isLeap(y) ? 6 : 5) : 30, Number(eDay.value) || 1);
+                ok(); jdn = CAL.jdnFromEth(y, m, Number(eDay.value)); show();
+            }
+            [eMonth, eDay].forEach(function (el) { el.addEventListener('change', fromEthiopian); });
+            eYear.addEventListener('input', fromEthiopian);
+
+            dirBtns.forEach(function (b) {
+                b.addEventListener('click', function () {
+                    dir = b.dataset.dir;
+                    dirBtns.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+                    $('in-g2e').classList.toggle('hidden', dir !== 'g2e');
+                    $('in-e2g').classList.toggle('hidden', dir !== 'e2g');
+                    $('in-e2g').classList.toggle('grid', dir === 'e2g');
+                    ok(); syncInputs();                      // carry the same date across
+                });
+            });
+            $('t-today').addEventListener('click', function () { jdn = CAL.todayJdn(); ok(); syncInputs(); show(); });
+
+            syncInputs(); show();
+        })();
+
+        /* ==================================================================
+           02 — Walkthrough: pinned horizontal track
+           ================================================================== */
+        var section = document.getElementById('walkthrough');
+        var track = section.querySelector('.wt-track');
+        var panels = Array.prototype.slice.call(section.querySelectorAll('.wt-panel'));
+
+        function showModeCopy(motion) {
+            section.querySelectorAll('[data-motion]').forEach(function (el) { el.classList.toggle('hidden', !motion); });
+            section.querySelectorAll('[data-static]').forEach(function (el) { el.classList.toggle('hidden', motion); });
+        }
+
+        if (!window.gsap || !window.ScrollTrigger) { showModeCopy(false); return; }   // strip stays swipeable
+        gsap.registerPlugin(ScrollTrigger);
+        // Phone address bars grow and shrink mid-scroll; re-measuring on
+        // each of those resizes would make the pinned track jump.
+        ScrollTrigger.config({ ignoreMobileResize: true });
+
+        var bars = Array.prototype.slice.call(section.querySelectorAll('.wt-bars span'));
+        var idxEl = document.getElementById('wt-index');
+        var nameEl = document.getElementById('wt-name');
+        var sun = section.querySelector('.sun');
+        var skyDay = section.querySelector('.sky-day');
+        var skyDusk = section.querySelector('.sky-dusk');
+        var skyEth = document.getElementById('sky-eth');
+        var skyPeriod = document.getElementById('sky-period');
+        var skyStd = document.getElementById('sky-std');
+
+        function setStep(i) {
+            bars.forEach(function (b, k) { b.classList.toggle('is-on', k <= i); });
+            idxEl.textContent = i < 0 ? '00' : '0' + (i + 1);
+            nameEl.textContent = i < 0 ? 'A closer look' : panels[i].dataset.name;
+        }
+
+        // The sky at day-fraction p (0 = sunrise, 1 = sunset): the sun on a
+        // low arc across the section, daylight strongest at noon, the
+        // horizon glowing at either end, and the clock reading.
+        var lastClock = '';
+        function sky(p) {
+            var w = section.clientWidth, h = section.clientHeight;
+            var arc = 1 - Math.pow(2 * p - 1, 2);                 // 0 at the horizon, 1 at noon
+            var x = w * (0.06 + 0.88 * p), y = h * (0.86 - 0.7 * arc);
+            sun.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+            skyDay.style.opacity = (0.25 + 0.75 * arc).toFixed(3);
+            skyDusk.style.opacity = (1 - 0.8 * arc).toFixed(3);
+            var min = Math.round((360 + p * 720) / 5) * 5;        // 6:00 AM → 6:00 PM
+            var et = CAL.ethTime(min % 1440);
+            var key = et.text + et.day;
+            if (key !== lastClock) {
+                lastClock = key;
+                skyEth.textContent = et.text;
+                skyPeriod.textContent = et.day ? 'ቀን' : 'ሌሊት';
+                skyStd.textContent = CAL.stdTime(min % 1440);
+            }
+        }
+
+        var mm = gsap.matchMedia();
+
+        mm.add('(prefers-reduced-motion: no-preference)', function () {
+            section.classList.add('is-pinned');
+            showModeCopy(true);
+            // Travel until the last screen sits dead centre. Measured from
+            // layout offsets: scrollWidth on a transformed, overflow-visible
+            // flex track under-reports its real extent.
+            var lastPanel = panels[panels.length - 1];
+            var distance = function () {
+                return lastPanel.offsetLeft + lastPanel.offsetWidth / 2 - section.clientWidth / 2;
+            };
+            var gap = function () { return parseFloat(getComputedStyle(track).columnGap) || 0; };
+
+            var slide = gsap.to(track, {
+                x: function () { return -distance(); },
+                ease: 'none',
+                // Follows the smoothed track position, so the sun moves with
+                // the screens rather than with the raw scroll.
+                onUpdate: function () { sky(this.progress()); },
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top top',
+                    end: function () { return '+=' + distance(); },
+                    pin: true,
+                    scrub: 0.8,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true,
+                    onRefresh: function () { sky(slide ? slide.progress() : 0); }
+                }
+            });
+            sky(0);
+
+            // Cascade: each phone swings in from the right, settles flat at
+            // the centre, and swings away as the next one arrives.
+            panels.forEach(function (panel, i) {
+                var phone = panel.querySelector('.wt-phone');
+                gsap.timeline({
+                    scrollTrigger: { trigger: panel, containerAnimation: slide, start: 'left right', end: 'right left', scrub: true }
+                })
+                    .fromTo(phone, { rotateY: -34, rotateX: 6, scale: 0.84, opacity: 0.3, y: 40 },
+                        { rotateY: 0, rotateX: 0, scale: 1, opacity: 1, y: 0, ease: 'power2.out', duration: 0.5 })
+                    .to(phone, { rotateY: 26, scale: 0.9, opacity: 0.4, y: -12, ease: 'power2.in', duration: 0.5 });
+
+                // Active range runs across the gap to the next panel, so some
+                // screen is always the current step while the track moves.
+                ScrollTrigger.create({
+                    trigger: panel, containerAnimation: slide,
+                    start: 'left center',
+                    end: function () { return 'right+=' + gap() + ' center'; },
+                    onToggle: function (self) { if (self.isActive) setStep(i); }
+                });
+            });
+
+            ScrollTrigger.create({
+                trigger: panels[0], containerAnimation: slide,
+                start: 'left center',
+                onLeaveBack: function () { setStep(-1); }
+            });
+
+            return function () {
+                section.classList.remove('is-pinned');
+                gsap.set(track, { clearProps: 'transform' });
+            };
+        });
+
+        mm.add('(prefers-reduced-motion: reduce)', function () {
+            // No pin: a swipeable strip under a still, midday sky. Arrows move
+            // it for mouse and keyboard users (its scrollbar is hidden), and
+            // the progress row follows whichever screen is nearest the middle.
+            var arrows = section.querySelector('.wt-arrows');
+            var prev = arrows.querySelector('[data-dir="-1"]');
+            var next = arrows.querySelector('[data-dir="1"]');
+            var stops = [section.querySelector('.wt-intro')].concat(panels);   // intro = step -1
+            var current = -1;
+
+            section.classList.add('is-static');
+            showModeCopy(false);
+            section.style.height = 'auto';
+            section.style.paddingBlock = '2.5rem';
+            arrows.classList.replace('hidden', 'flex');
+            track.setAttribute('role', 'region');
+            track.setAttribute('aria-label', 'Ethiopian Calendar & Widgets screens');
+            track.tabIndex = 0;                                   // arrow keys scroll it
+            sky(0.5);
+
+            function nearest() {
+                var t = track.getBoundingClientRect(), mid = t.left + t.width / 2;
+                var best = 0, bestD = Infinity;
+                stops.forEach(function (el, k) {
+                    var r = el.getBoundingClientRect();
+                    var d = Math.abs(r.left + r.width / 2 - mid);
+                    if (d < bestD) { bestD = d; best = k; }
+                });
+                return best;
+            }
+            function onScroll() {
+                current = nearest();
+                setStep(current - 1);
+                // By position as well as index: at rest the strip already
+                // shows the intro and the first screen, with nowhere left to go.
+                prev.disabled = current === 0 || track.scrollLeft <= 1;
+                next.disabled = current === stops.length - 1 || track.scrollLeft >= track.scrollWidth - track.clientWidth - 1;
+            }
+            function go(e) {
+                var k = Math.max(0, Math.min(stops.length - 1, current + Number(e.currentTarget.dataset.dir)));
+                var t = track.getBoundingClientRect(), r = stops[k].getBoundingClientRect();
+                track.scrollBy({ left: r.left + r.width / 2 - (t.left + t.width / 2) });
+            }
+            track.addEventListener('scroll', onScroll, { passive: true });
+            prev.addEventListener('click', go);
+            next.addEventListener('click', go);
+            onScroll();
+
+            return function () {
+                track.removeEventListener('scroll', onScroll);
+                prev.removeEventListener('click', go);
+                next.removeEventListener('click', go);
+                arrows.classList.replace('flex', 'hidden');
+                section.classList.remove('is-static');
+                track.removeAttribute('role');
+                track.removeAttribute('aria-label');
+                track.removeAttribute('tabindex');
+                section.style.height = '';
+                section.style.paddingBlock = '';
+            };
+        });
+
+        // "Spend a day with it": glide to where the walkthrough pins. The
+        // section's own box is unreliable once pinned, so aim at the
+        // trigger's start when there is one.
+        document.querySelector('a[href="#walkthrough"]').addEventListener('click', function (e) {
+            e.preventDefault();
+            var st = ScrollTrigger.getAll().filter(function (t) { return t.pin === section; })[0];
+            var top = st ? st.start : section.getBoundingClientRect().top + window.scrollY;
+            var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({ top: top, behavior: still ? 'auto' : 'smooth' });
+            history.replaceState(null, '', '#walkthrough');
+        });
+
+        // Decode the walkthrough screens ahead of time, so none of them is
+        // decoded for the first time mid-scroll.
+        section.querySelectorAll('img').forEach(function (img) {
+            if (img.decode) img.decode().catch(function () {});
+        });
+
+        // Tailwind's CDN build and the web fonts both change layout after
+        // first paint; re-measure the pinned distance once they settle.
+        window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    })();
+    </script>
 </body>
 </html>
